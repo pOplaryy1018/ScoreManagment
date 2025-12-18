@@ -1,0 +1,39 @@
+/* 成績管理樣式 */
+
+.grade-table {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.grade-filter {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.grade-filter select {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    min-width: 150px;
+}
+
+/* 成績狀態標籤 */
+.grade-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.grade-badge.pass {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.grade-badge.fail {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+

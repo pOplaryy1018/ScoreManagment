@@ -1,0 +1,97 @@
+/* 登录页面样式 */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    padding: var(--space-lg);
+}
+
+.login-form {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-xl);
+    width: 100%;
+    max-width: 400px;
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: var(--space-md);
+}
+
+.logo-section h1 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--space-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.login-btn {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background: var(--primary-dark);
+}
+
+.login-btn:disabled {
+    background: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .login-container {
+        padding: var(--space-md);
+    }
+    
+    .login-form {
+        padding: var(--space-lg);
+    }
+    
+    .logo-section h1 {
+        font-size: 1.5rem;
+    }
+}

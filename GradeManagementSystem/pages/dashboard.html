@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成绩管理系统 - 仪表板</title>
+    <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/modules/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../public/images/logo.png" alt="成绩管理系统" class="logo-img">
+                    <h1>成绩管理系统</h1>
+                </div>
+                <div class="user-info">
+                    <span id="userName">用户</span>
+                    <button id="logoutBtn" class="btn btn-primary">退出登录</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <ul>
+                        <li class="nav-item active">
+                            <a href="dashboard.html" class="nav-link">
+                                <img src="../public/images/icons/dashboard.svg" alt="仪表板" class="nav-icon">
+                                <span>仪表板</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="student.html" class="nav-link">
+                                <img src="../public/images/icons/user.svg" alt="学生管理" class="nav-icon">
+                                <span>学生管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="grade.html" class="nav-link">
+                                <img src="../public/images/icons/grade.svg" alt="成绩管理" class="nav-icon">
+                                <span>成绩管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- 内容区域 -->
+            <main class="content">
+                <div class="content-header">
+                    <h2>系统概览</h2>
+                    <p>欢迎使用成绩管理系统</p>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍🎓</div>
+                        <div class="stat-info">
+                            <h3 id="studentCount">0</h3>
+                            <p>学生总数</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3 id="gradeCount">0</h3>
+                            <p>成绩记录</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍🏫</div>
+                        <div class="stat-info">
+                            <h3 id="teacherCount">0</h3>
+                            <p>教师数量</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <h3 id="avgGrade">0</h3>
+                            <p>平均成绩</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近活动 -->
+                <div class="recent-activity">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>最近活动</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="activityList" class="activity-list">
+                                <!-- 活动列表将通过JS动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/data/users.js"></script>
+    <script src="../js/data/students.js"></script>
+    <script src="../js/data/grades.js"></script>
+    <script src="../js/pages/dashboard.js"></script>
+</body>
+</html>

@@ -1,3 +1,56 @@
+// 全局函数 - 用于HTML onclick事件调用
+function selectCourse(courseId) {
+    console.log(`尝试选择课程: ${courseId}`);
+    
+    try {
+        // 使用courseManager进行选课
+        const selectedCourse = courseManager.selectCourse(courseId);
+        
+        // 更新本地数据
+        courseData.availableCourses = courseManager.getAvailableCourses();
+        courseData.selectedCourses = courseManager.getSelectedCourses();
+        
+        // 同步课程数据到我的课程历史
+        syncMyCoursesToSelectedCourses();
+        
+        // 重新渲染课程列表
+        renderAvailableCourses(courseData.availableCourses);
+        renderSelectedCourses(courseData.selectedCourses);
+        
+        alert(`已成功选择课程：${selectedCourse.name}`);
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+function dropCourse(courseId) {
+    console.log(`尝试退选课程: ${courseId}`);
+    
+    if (!confirm('确定要退选该课程吗？')) {
+        return;
+    }
+    
+    try {
+        // 使用courseManager进行退选
+        const droppedCourse = courseManager.dropCourse(courseId);
+        
+        // 更新本地数据
+        courseData.availableCourses = courseManager.getAvailableCourses();
+        courseData.selectedCourses = courseManager.getSelectedCourses();
+        
+        // 同步课程数据到我的课程历史
+        syncMyCoursesToSelectedCourses();
+        
+        // 重新渲染课程列表
+        renderAvailableCourses(courseData.availableCourses);
+        renderSelectedCourses(courseData.selectedCourses);
+        
+        alert(`已成功退选课程：${droppedCourse.name}`);
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
 // 学生端页面功能切换逻辑
 document.addEventListener('DOMContentLoaded', function() {
         // 功能配置
@@ -478,100 +531,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // 跳转到首页
             window.location.href = '../index.html';
-        }
-    }
-
-    // 选择课程
-    function selectCourse(courseId) {
-        try {
-            // 使用courseManager进行选课
-            const selectedCourse = courseManager.selectCourse(courseId);
-            
-            // 记录选课活动
-            studentManager.recordCourseSelection('20230101', courseId, selectedCourse.name);
-            
-            // 更新本地数据
-            courseData.availableCourses = courseManager.getAvailableCourses();
-            courseData.selectedCourses = courseManager.getSelectedCourses();
-            
-            // 同步课程数据到我的课程历史
-            syncMyCoursesToSelectedCourses();
-            
-            // 重新渲染课程列表
-            renderAvailableCourses(courseData.availableCourses);
-            renderSelectedCourses(courseData.selectedCourses);
-            
-            // 更新待办事项的课程选择器
-            updateTodoCourseSelector();
-            
-            // 如果当前在"我的课程"页面，重新渲染我的课程
-            const activeNavItem = document.querySelector('.nav-item.active');
-            if (activeNavItem && activeNavItem.getAttribute('data-function') === 'my-courses') {
-                queryMyCourses();
-            }
-            
-            // 如果当前在"待办事项"页面，重新查询待办事项
-            if (activeNavItem && activeNavItem.getAttribute('data-function') === 'todo') {
-                queryTodo();
-            }
-            
-            // 如果当前在"个人中心"页面，更新活动记录
-            if (activeNavItem && activeNavItem.getAttribute('data-function') === 'profile') {
-                updateRecentActivities();
-            }
-            
-            alert(`已成功选择课程：${selectedCourse.name}`);
-        } catch (error) {
-            alert(error.message);
-        }
-    }
-
-    // 退选课程
-    function dropCourse(courseId) {
-        if (!confirm('确定要退选该课程吗？')) {
-            return;
-        }
-        
-        try {
-            // 使用courseManager进行退选
-            const droppedCourse = courseManager.dropCourse(courseId);
-            
-            // 记录退课活动
-            studentManager.recordCourseDrop('20230101', courseId, droppedCourse.name);
-            
-            // 更新本地数据
-            courseData.availableCourses = courseManager.getAvailableCourses();
-            courseData.selectedCourses = courseManager.getSelectedCourses();
-            
-            // 同步课程数据到我的课程历史
-            syncMyCoursesToSelectedCourses();
-            
-            // 重新渲染课程列表
-            renderAvailableCourses(courseData.availableCourses);
-            renderSelectedCourses(courseData.selectedCourses);
-            
-            // 更新待办事项的课程选择器
-            updateTodoCourseSelector();
-            
-            // 如果当前在"我的课程"页面，重新渲染我的课程
-            const activeNavItem = document.querySelector('.nav-item.active');
-            if (activeNavItem && activeNavItem.getAttribute('data-function') === 'my-courses') {
-                queryMyCourses();
-            }
-            
-            // 如果当前在"待办事项"页面，重新查询待办事项
-            if (activeNavItem && activeNavItem.getAttribute('data-function') === 'todo') {
-                queryTodo();
-            }
-            
-            // 如果当前在"个人中心"页面，更新活动记录
-            if (activeNavItem && activeNavItem.getAttribute('data-function') === 'profile') {
-                updateRecentActivities();
-            }
-            
-            alert(`已成功退选课程：${droppedCourse.name}`);
-        } catch (error) {
-            alert(error.message);
         }
     }
 

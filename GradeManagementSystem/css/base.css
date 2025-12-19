@@ -19,6 +19,16 @@
     --background-color: #f8f9fa;
     --white: #ffffff;
     
+    /* 状态颜色 */
+    --success-color: #27ae60;
+    --success-light: #d5f4e6;
+    --error-color: #e74c3c;
+    --error-light: #fadbd8;
+    --warning-color: #f39c12;
+    --warning-light: #fdebd0;
+    --info-color: #3498db;
+    --info-light: #d6eaf8;
+    
     /* 阴影 */
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.1);

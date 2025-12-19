@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师端 - 成绩管理教学平台</title>
+    <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/modules/teacher.css">
+    <link rel="stylesheet" href="../css/modules/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../public/images/icons/favicon.png" alt="成绩管理系统" class="logo-img">
+                    <h1>成绩管理教学平台 - 教师端</h1>
+                </div>
+                <div class="user-info">
+                    <span id="userName">教师</span>
+                    <button id="logoutBtn" class="btn btn-primary">退出登录</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <ul>
+                        <li class="nav-item active">
+                            <a href="#" class="nav-link" data-page="course-management">
+                                <img src="../public/images/icons/course.svg" alt="课程管理" class="nav-icon">
+                                <span>课程管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-page="assignments">
+                                <img src="../public/images/icons/assignment.svg" alt="作业管理" class="nav-icon">
+                                <span>作业管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-page="exams">
+                                <img src="../public/images/icons/exam.svg" alt="考试管理" class="nav-icon">
+                                <span>考试管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-page="grade-entry">
+                                <img src="../public/images/icons/grade.svg" alt="成绩录入" class="nav-icon">
+                                <span>成绩录入</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- 内容区域 -->
+            <main class="content">
+                <!-- 课程管理内容 -->
+                <div id="course-management-content" class="page-content">
+                    <div class="content-header">
+                        <h2>课程管理</h2>
+                        <p>管理您负责的课程信息</p>
+                    </div>
+                    
+                    <div class="teacher-table-container">
+                        <table class="teacher-table">
+                            <thead>
+                                <tr>
+                                    <th>课程编号</th>
+                                    <th>课程名称</th>
+                                    <th>学期</th>
+                                    <th>学分</th>
+                                    <th>学时</th>
+                                    <th>学生人数</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="courseTableBody">
+                                <!-- 课程数据将通过JS动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 作业管理内容 -->
+                <div id="assignments-content" class="page-content" style="display: none;">
+                    <div class="content-header">
+                        <h2>作业管理</h2>
+                        <p>发布和管理作业</p>
+                    </div>
+                    <div class="teacher-cards">
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">📝</div>
+                            <div class="teacher-card-content">
+                                <h3>发布新作业</h3>
+                                <p>创建新的作业任务，设置截止日期和评分标准</p>
+                            </div>
+                        </div>
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">📊</div>
+                            <div class="teacher-card-content">
+                                <h3>作业统计</h3>
+                                <p>查看学生提交情况和作业完成率</p>
+                            </div>
+                        </div>
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">✅</div>
+                            <div class="teacher-card-content">
+                                <h3>批改作业</h3>
+                                <p>批改学生提交的作业并给出评分</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 考试管理内容 -->
+                <div id="exams-content" class="page-content" style="display: none;">
+                    <div class="content-header">
+                        <h2>考试管理</h2>
+                        <p>组织和管理考试</p>
+                    </div>
+                    <div class="teacher-cards">
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">📋</div>
+                            <div class="teacher-card-content">
+                                <h3>创建考试</h3>
+                                <p>设置考试时间、地点和考试内容</p>
+                            </div>
+                        </div>
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">📈</div>
+                            <div class="teacher-card-content">
+                                <h3>考试安排</h3>
+                                <p>查看考试安排和监考任务</p>
+                            </div>
+                        </div>
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">📊</div>
+                            <div class="teacher-card-content">
+                                <h3>成绩分析</h3>
+                                <p>分析考试成绩分布和统计信息</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成绩录入内容 -->
+                <div id="grade-entry-content" class="page-content" style="display: none;">
+                    <div class="content-header">
+                        <h2>成绩录入</h2>
+                        <p>录入和管理学生成绩</p>
+                    </div>
+                    <div class="teacher-cards">
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">✏️</div>
+                            <div class="teacher-card-content">
+                                <h3>批量录入</h3>
+                                <p>批量导入学生成绩数据</p>
+                            </div>
+                        </div>
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">📊</div>
+                            <div class="teacher-card-content">
+                                <h3>成绩统计</h3>
+                                <p>查看成绩分布和统计分析</p>
+                            </div>
+                        </div>
+                        <div class="teacher-card">
+                            <div class="teacher-card-icon">📈</div>
+                            <div class="teacher-card-content">
+                                <h3>成绩报表</h3>
+                                <p>生成成绩报表和导出功能</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/data/courses.js"></script>
+    <script src="../js/pages/teacher-manage.js"></script>
+    
+    <script>
+        // 页面加载时的权限检查
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查用户权限
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            if (!currentUser || currentUser.role !== 'teacher') {
+                alert('您没有访问教师端的权限，请重新登录！');
+                window.location.href = '../index.html';
+                return;
+            }
+            
+            // 更新用户信息显示
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement) {
+                userNameElement.textContent = currentUser.name || '教师';
+            }
+            
+            // 绑定退出登录事件
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    if (confirm('确定要退出登录吗？')) {
+                        localStorage.removeItem('currentUser');
+                        localStorage.removeItem('loginState');
+                        window.location.href = '../index.html';
+                    }
+                });
+            }
+            
+            // 绑定菜单点击事件
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // 更新菜单激活状态
+                    navLinks.forEach(l => {
+                        l.parentElement.classList.remove('active');
+                    });
+                    this.parentElement.classList.add('active');
+                    
+                    // 根据页面显示不同内容
+                    const page = this.dataset.page;
+                    showPageContent(page);
+                });
+            });
+            
+            // 初始化显示课程管理页面
+            loadCourseData();
+        });
+        
+        // 显示页面内容
+        function showPageContent(page) {
+            // 隐藏所有页面内容
+            document.querySelectorAll('.page-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            switch (page) {
+                case 'course-management':
+                    document.getElementById('course-management-content').style.display = 'block';
+                    loadCourseData();
+                    break;
+                case 'assignments':
+                    document.getElementById('assignments-content').style.display = 'block';
+                    break;
+                case 'exams':
+                    document.getElementById('exams-content').style.display = 'block';
+                    break;
+                case 'grade-entry':
+                    document.getElementById('grade-entry-content').style.display = 'block';
+                    break;
+                default:
+                    document.getElementById('course-management-content').style.display = 'block';
+                    loadCourseData();
+            }
+        }
+        
+        // 加载课程数据
+        function loadCourseData() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const courseTableBody = document.getElementById('courseTableBody');
+            
+            if (!courseTableBody) return;
+            
+            // 模拟教师课程数据
+            const teacherCourses = [
+                {
+                    id: 'CS101',
+                    name: '计算机科学导论',
+                    semester: '2024-2025学年第一学期',
+                    credit: 3,
+                    hours: 48,
+                    students: 45,
+                    status: '进行中'
+                },
+                {
+                    id: 'MATH201',
+                    name: '高等数学',
+                    semester: '2024-2025学年第一学期',
+                    credit: 4,
+                    hours: 64,
+                    students: 60,
+                    status: '进行中'
+                },
+                {
+                    id: 'ENG101',
+                    name: '大学英语',
+                    semester: '2024-2025学年第一学期',
+                    credit: 2,
+                    hours: 32,
+                    students: 50,
+                    status: '进行中'
+                },
+                {
+                    id: 'PHY201',
+                    name: '大学物理',
+                    semester: '2024-2025学年第一学期',
+                    credit: 4,
+                    hours: 64,
+                    students: 55,
+                    status: '进行中'
+                }
+            ];
+            
+            // 生成课程表格
+            courseTableBody.innerHTML = teacherCourses.map(course => `
+                <tr>
+                    <td>${course.id}</td>
+                    <td>${course.name}</td>
+                    <td>${course.semester}</td>
+                    <td>${course.credit}</td>
+                    <td>${course.hours}</td>
+                    <td>${course.students}</td>
+                    <td><span class="status-badge status-${course.status === '进行中' ? 'active' : 'inactive'}">${course.status}</span></td>
+                    <td>
+                        <button class="btn btn-outline" onclick="viewCourseDetail('${course.id}')">查看</button>
+                        <button class="btn btn-primary" onclick="editCourse('${course.id}')">编辑</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // 查看课程详情
+        function viewCourseDetail(courseId) {
+            alert(`查看课程详情：${courseId}`);
+            // 这里可以跳转到课程详情页面或显示模态框
+        }
+        
+        // 编辑课程
+        function editCourse(courseId) {
+            alert(`编辑课程：${courseId}`);
+            // 这里可以跳转到课程编辑页面或显示编辑表单
+        }
+    </script>
+</body>
+</html>

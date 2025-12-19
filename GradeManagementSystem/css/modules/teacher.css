@@ -1,0 +1,390 @@
+/* 教师端样式模块 */
+
+/* 教师仪表板欢迎区域 */
+.teacher-welcome {
+  padding: var(--space-xl);
+  text-align: center;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.teacher-welcome h2 {
+  color: var(--primary-color);
+  margin-bottom: var(--space-sm);
+  font-size: 1.5rem;
+}
+
+.teacher-welcome p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* 教师功能卡片 */
+.teacher-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.teacher-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.teacher-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.teacher-card__icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-md);
+  display: block;
+}
+
+.teacher-card__title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.teacher-card__desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* 教师表格样式 */
+.teacher-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.teacher-table th,
+.teacher-table td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.teacher-table th {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.teacher-table tr:hover {
+  background: var(--background-light);
+}
+
+/* 状态徽章样式 */
+.status-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background: var(--success-light);
+  color: var(--success-color);
+}
+
+.status-inactive {
+  background: var(--error-light);
+  color: var(--error-color);
+}
+
+/* 教师表单样式 */
+.teacher-form {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-xl);
+}
+
+.teacher-form__title {
+  color: var(--primary-color);
+  margin-bottom: var(--space-lg);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.teacher-form__actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .teacher-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .teacher-form {
+    padding: var(--space-lg);
+  }
+  
+  .teacher-form__actions {
+    flex-direction: column;
+  }
+}
+
+/* 课件管理样式 */
+.material-upload {
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.material-upload .upload-label {
+  display: inline-block;
+  cursor: pointer;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.material-upload .upload-icon {
+  font-size: 1.2rem;
+  margin-right: var(--space-sm);
+}
+
+.material-list {
+  margin-top: var(--space-lg);
+}
+
+.empty-materials {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: var(--space-xl);
+  font-style: italic;
+}
+
+/* 课件分组样式 */
+.material-group {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+.material-group__summary {
+  padding: var(--space-md);
+  background: var(--background-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  list-style: none;
+}
+
+.material-group__summary::-webkit-details-marker {
+  display: none;
+}
+
+.material-group__summary::before {
+  content: '▶';
+  margin-right: var(--space-sm);
+  transition: transform 0.3s ease;
+}
+
+.material-group[open] .material-group__summary::before {
+  transform: rotate(90deg);
+}
+
+.material-group__icon {
+  margin-right: var(--space-sm);
+  font-size: 1.1rem;
+}
+
+.material-group__label {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.material-group__count {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.material-group__content {
+  padding: var(--space-sm);
+  background: var(--white);
+}
+
+/* 课件项样式 */
+.material-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-xs);
+  transition: background-color 0.2s ease;
+}
+
+.material-item:hover {
+  background: var(--background-color);
+}
+
+.material-item__icon {
+  font-size: 1.2rem;
+  margin-right: var(--space-sm);
+  width: 24px;
+  text-align: center;
+}
+
+.material-item__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.material-item__name {
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: var(--space-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.material-item__name:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.material-item__meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.material-item__delete {
+  background: none;
+  border: none;
+  color: var(--error-color);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.material-item__delete:hover {
+  background: var(--error-light);
+}
+
+.delete-icon {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* 预览模态框样式 */
+.material-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.material-preview-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  padding: var(--space-lg);
+}
+
+.material-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-md);
+}
+
+.material-preview-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.material-preview-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.material-preview-close:hover {
+  color: var(--text-primary);
+}
+
+/* 文件类型特定样式 */
+.material-preview-image {
+  max-width: 100%;
+  max-height: 400px;
+  display: block;
+  margin: 0 auto;
+}
+
+.material-preview-audio,
+.material-preview-video {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.material-preview-document {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.material-preview-document-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-lg);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .material-preview-content {
+    max-width: 95%;
+    padding: var(--space-md);
+  }
+  
+  .material-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .material-item__delete {
+    align-self: flex-end;
+    margin-top: var(--space-xs);
+  }
+}

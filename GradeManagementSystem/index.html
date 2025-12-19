@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>成绩管理教学平台 - 登录</title>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/modules/login.css">
   <style>
     body {
       background: linear-gradient(135deg, #e6f7ff, #b3d9ff);
@@ -19,19 +21,20 @@
       position: absolute;
       top: var(--space-lg);
       left: var(--space-lg);
+      display: flex;
       align-items: center;
       gap: var(--space-sm);
     }
 
-    .logo{
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
     }
-    
-    .logo-title h1{
-        font-size: 24px;
-        font-weight: bold;
+
+    .logo-title h1 {
+      font-size: 24px;
+      font-weight: bold;
     }
 
     .login-container {
@@ -63,12 +66,8 @@
       font-weight: bold;
     }
 
-    .login-form {
-      gap: var(--space-md);
-    }
-
     .form-group {
-      position: relative;
+      margin-bottom: var(--space-md);
     }
 
     .form-group label {
@@ -85,12 +84,17 @@
       border-radius: var(--radius-md);
       font-size: 14px;
       transition: border-color 0.3s ease;
+      box-sizing: border-box;
     }
 
     .form-control:focus {
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    .password-wrapper {
+      position: relative;
     }
 
     .password-toggle {
@@ -100,6 +104,9 @@
       transform: translateY(-50%);
       cursor: pointer;
       color: var(--text-secondary);
+      background: none;
+      border: none;
+      font-size: 16px;
     }
 
     .remember-me {
@@ -114,151 +121,105 @@
       width: 100%;
       font-size: 16px;
       padding: var(--space-md);
+      margin-top: var(--space-md);
+    }
+
+    .login-links {
+      text-align: center;
+      margin-top: var(--space-lg);
+      font-size: 13px;
+    }
+
+    .login-links a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .login-links a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
     }
 
     .guest-link {
       text-align: center;
-      margin-top: var(--space-lg);
-      font-size: 12px;
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border-color);
+      font-size: 13px;
+    }
+
+    .guest-link a {
       color: var(--text-secondary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.3s ease;
+    }
+
+    .guest-link a:hover {
+      color: var(--primary-color);
     }
   </style>
 </head>
+
 <body>
-    <div class="logo-title flex">  
-        <img src="public/images/icons/favicon.png" alt="成绩管理系统" class="logo">
-        <h1>成绩管理教学平台</h1>
-    </div>
-
-<div class="login-container">
-  <!-- 角色标签 -->
-  <div class="role-tabs">
-    <div class="role-tab active" data-role="student">学生</div>
-    <div class="role-tab" data-role="teacher">教师</div>
-    <div class="role-tab" data-role="teachadmin">教学管理员</div>
-    <div class="role-tab" data-role="systemadmin">系统管理员</div>
+  <div class="logo-title">
+    <img src="public/images/icons/favicon.png" alt="成绩管理系统" class="logo">
+    <h1>成绩管理教学平台</h1>
   </div>
 
-  <!-- 登录表单 -->
-  <form id="loginForm" class="login-form flex-column">
-    <div class="form-group">
-      <label for="username">账号</label>
-      <input type="text" id="username" class="form-control" placeholder="请输入学号" required />
+  <div class="login-container">
+    <!-- 角色标签 -->
+    <div class="role-tabs">
+      <div class="role-tab active" data-role="student">学生</div>
+      <div class="role-tab" data-role="teacher">教师</div>
+      <div class="role-tab" data-role="teachadmin">教学管理员</div>
+      <div class="role-tab" data-role="systemadmin">系统管理员</div>
     </div>
 
-    <div class="form-group">
-      <label for="password">密码</label>
-      <input type="password" id="password" class="form-control" placeholder="请输入密码" required />
-      <span class="password-toggle" onclick="togglePassword()">👁️</span>
+    <!-- 登录表单 -->
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">账号</label>
+        <input type="text" id="username" class="form-control" placeholder="请输入学号" required />
+      </div>
+
+      <div class="form-group">
+        <label for="password">密码</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" class="form-control" placeholder="请输入密码" required />
+          <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+        </div>
+      </div>
+
+      <div class="remember-me">
+        <input type="checkbox" id="remember" />
+        <label for="remember">记住密码</label>
+      </div>
+
+      <button type="submit" class="login-btn btn btn-primary">登 录</button>
+    </form>
+
+    <!-- 忘记密码链接 -->
+    <div class="login-links">
+      <a href="pages/forgot-password.html">忘记密码？</a>
     </div>
 
-    <div class="remember-me">
-      <input type="checkbox" id="remember" />
-      <label for="remember">记住密码</label>
+    <!-- 游客入口 -->
+    <div class="guest-link">
+      <a href="pages/student-dashboard.html">
+        <span>👤</span>
+        <span>以游客身份浏览课程</span>
+      </a>
     </div>
-
-    <button type="submit" class="login-btn btn btn-primary">登 陆</button>
-  </form>
-
-  <!-- 游客入口 -->
-  <div class="guest-link">
-    <a href="public-courses.html">以游客身份浏览课程</a>
   </div>
-</div>
 
-<script>
-  // ===================
-  // 模拟用户数据库
-  // ===================
-  const MOCK_USERS = [
-    { id: "stu123", name: "张三", role: "student", passwordHash: "hash_stu123_123456" },
-    { id: "tea001", name: "李老师", role: "teacher", passwordHash: "hash_tea001_123456" },
-    { id: "admin_edu", name: "教务王主任", role: "academic-admin", passwordHash: "hash_admin_edu_123456" },
-    { id: "sys_admin", name: "系统管理员", role: "system-admin", passwordHash: "hash_sys_admin_123456" }
-  ];
-
-  // ===================
-  // 工具函数：加盐哈希（简化版）
-  // ===================
-  function passwordHash(username, password) {
-    return 'hash_' + username + '_' + password;
-  }
-
-  // ===================
-  // 设置登录状态
-  // ===================
-  function setLoginState(user) {
-    localStorage.setItem('currentUser', JSON.stringify(user));
-  }
-
-  // ===================
-  // 切换密码可见性
-  // ===================
-  function togglePassword() {
-    const pwd = document.getElementById('password');
-    if (pwd.type === 'password') {
-      pwd.type = 'text';
-    } else {
-      pwd.type = 'password';
-    }
-  }
-
-  // ===================
-  // 角色切换逻辑
-  // ===================
-  document.querySelectorAll('.role-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      // 移除所有 active
-      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-      // 添加当前 active
-      tab.classList.add('active');
-
-      // 更新 placeholder
-      const role = tab.dataset.role;
-      const usernameInput = document.getElementById('username');
-      switch(role) {
-        case 'student':
-          usernameInput.placeholder = '请输入学号';
-          break;
-        case 'teacher':
-          usernameInput.placeholder = '请输入工号';
-          break;
-        case 'teachadmin'||'systemadmin':
-          usernameInput.placeholder = '请输入管理员账号';
-          break;
-      }
-    });
-  });
-
-  // ===================
-  // 登录表单提交
-  // ===================
-  document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
-
-    // 检查是否为空
-    if (!username || !password) {
-      alert('请填写账号和密码');
-      return;
-    }
-
-    // 计算哈希
-    const hash = passwordHash(username, password);
-
-    // 查找匹配用户
-    const user = MOCK_USERS.find(u => u.id === username && u.passwordHash === hash);
-
-    if (user) {
-      setLoginState(user);
-      window.location.href = 'dashboard.html'; // 跳转到主界面
-    } else {
-      alert('账号或密码错误，请重试');
-    }
-  });
-</script>
-
+  <!-- 引入外部 JS 文件 -->
+  <script src="js/utils.js"></script>
+  <script src="js/data/users.js"></script>
+  <script src="js/pages/login.js"></script>
 </body>
+
 </html>

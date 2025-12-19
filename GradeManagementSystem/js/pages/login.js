@@ -442,10 +442,11 @@ function handleLogin(e) {
             // 获取角色对应的页面
             function getRoleBasedPage(role) {
                 const rolePages = {
-                    'student': 'pages/student-dashboard.html',      // 学生首页
-                    'teacher': 'pages/teacher-dashboard.html',      // 教师首页
-                    'teachadmin': 'pages/teachadmin-dashboard.html', // 教学管理员首页
-                    'systemadmin': 'pages/admin-dashboard.html'     // 系统管理员首页
+                    'student': 'pages/student-portal.html',           // 学生首页
+                    'teacher': 'pages/teacher-dashboard.html',        // 教师首页
+                    'teachadmin': 'pages/dashboard.html',             // 教学管理员首页
+                    'systemadmin': 'pages/dashboard.html',            // 系统管理员首页
+                    'admin': 'pages/dashboard.html'                   // 管理员首页
                 };
                 return rolePages[role] || 'pages/dashboard.html';
             }

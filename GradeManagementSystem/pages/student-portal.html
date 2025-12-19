@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成绩管理系统 - 学生端</title>
+    <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/modules/student.css">
+</head>
+<body>
+    <div class="student-portal-container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../public/images/icons/成绩管理系统.png" alt="成绩管理系统" class="logo-img">
+                    <h1>成绩管理系统 - 学生端</h1>
+                </div>
+                <div class="user-info">
+                    <span id="studentName">学生姓名</span>
+                    <span id="studentId">学号：</span>
+                    <button id="logoutBtn" class="btn btn-primary">退出登录</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <ul>
+                        <li class="nav-item active" data-function="course-selection">
+                            <a href="#" class="nav-link">
+                                <img src="../public/images/icons/课程选择.png" alt="选课管理" class="nav-icon">
+                                <span>选课管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-function="my-courses">
+                            <a href="#" class="nav-link">
+                                <img src="../public/images/icons/我的课程.png" alt="我的课程" class="nav-icon">
+                                <span>我的课程</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-function="grade-query">
+                            <a href="#" class="nav-link">
+                                <img src="../public/images/icons/成绩查询.png" alt="成绩查询" class="nav-icon">
+                                <span>成绩查询</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-function="todo">
+                            <a href="#" class="nav-link">
+                                <img src="../public/images/icons/待办事项.png" alt="待办事项" class="nav-icon">
+                                <span>待办事项</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" data-function="profile">
+                            <a href="#" class="nav-link">
+                                <img src="../public/images/icons/个人中心.png" alt="个人中心" class="nav-icon">
+                                <span>个人中心</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- 内容区域 -->
+            <main class="content">
+                <!-- 欢迎区域已移除，使用各功能模块的卡片标题 -->
+
+                <!-- 选课管理功能内容 -->
+                <div id="course-selection-content" class="function-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>选课管理</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- 可选课程列表 -->
+                            <div class="course-list">
+                                <h4>可选课程</h4>
+                                <div id="availableCourses" class="courses-grid">
+                                    <!-- 课程列表将通过JS动态生成 -->
+                                    <div class="no-data">正在加载课程信息...</div>
+                                </div>
+                            </div>
+
+                            <!-- 已选课程 -->
+                            <div class="selected-courses">
+                                <h4>已选课程</h4>
+                                <div id="selectedCourses" class="courses-table">
+                                    <!-- 已选课程列表将通过JS动态生成 -->
+                                    <div class="no-data">暂无已选课程</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 我的课程功能内容 -->
+                <div id="my-courses-content" class="function-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>我的课程</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- 查询条件 -->
+                            <div class="query-form">
+                                <div class="form-group">
+                                    <label for="myCoursesSemesterSelect">学期：</label>
+                                    <select id="myCoursesSemesterSelect" class="form-control">
+                                        <option value="">全部学期</option>
+                                        <option value="2023-2024-1">2023-2024学年第一学期</option>
+                                        <option value="2023-2024-2">2023-2024学年第二学期</option>
+                                        <option value="2024-2025-1">2024-2025学年第一学期</option>
+                                    </select>
+                                </div>
+                                <button id="myCoursesQueryBtn" class="btn btn-primary">查询课程</button>
+                            </div>
+
+                            <!-- 课程列表 -->
+                            <div class="my-courses-container">
+                                <div id="myCoursesList" class="courses-grid">
+                                    <div class="no-data">请选择学期并查询课程</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成绩查询功能内容 -->
+                <div id="grade-query-content" class="function-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>成绩查询</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- 查询条件 -->
+                            <div class="query-form">
+                                <div class="form-group">
+                                    <label for="semesterSelect">学期：</label>
+                                    <select id="semesterSelect" class="form-control">
+                                        <option value="">全部学期</option>
+                                        <option value="2023-2024-1">2023-2024学年第一学期</option>
+                                        <option value="2023-2024-2">2023-2024学年第二学期</option>
+                                    </select>
+                                </div>
+                                <button id="queryBtn" class="btn btn-primary">查询成绩</button>
+                            </div>
+
+                            <!-- 成绩表格 -->
+                            <div class="grade-table-container">
+                                <table id="gradeTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>课程名称</th>
+                                            <th>课程代码</th>
+                                            <th>学分</th>
+                                            <th>成绩</th>
+                                            <th>学期</th>
+                                            <th>教师</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 成绩数据将通过JS动态生成 -->
+                                        <tr>
+                                            <td colspan="6" class="no-data">请选择学期并查询成绩</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 待办事项功能内容 -->
+                <div id="todo-content" class="function-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>待办事项</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- 课程选择 -->
+                            <div class="query-form">
+                                <div class="form-group">
+                                    <label for="todoCourseSelect">选择课程：</label>
+                                    <select id="todoCourseSelect" class="form-control">
+                                        <option value="">全部课程</option>
+                                        <!-- 课程选项将通过JS动态生成 -->
+                                    </select>
+                                </div>
+                                <button id="todoQueryBtn" class="btn btn-primary">查询事项</button>
+                            </div>
+
+                            <!-- 待办事项列表 -->
+                            <div id="todoList" class="todo-container">
+                                <div class="no-data">请选择课程并查询待办事项</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 个人中心功能内容 -->
+                <div id="profile-content" class="function-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>个人中心</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- 基本信息 -->
+                            <div class="profile-section">
+                                <h4>基本信息</h4>
+                                <div class="profile-info-grid">
+                                    <div class="profile-info-item">
+                                        <label>姓名：</label>
+                                        <span id="profileName">张三</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>学号：</label>
+                                        <span id="profileStudentId">20230101</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>学院：</label>
+                                        <span id="profileDepartment">计算机科学与技术学院</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>年级：</label>
+                                        <span id="profileGrade">2023级</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>专业：</label>
+                                        <span id="profileMajor">计算机科学与技术</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>班级：</label>
+                                        <span id="profileClass">计算机2301班</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>入学时间：</label>
+                                        <span id="profileAdmissionDate">2023-09-01</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>邮箱：</label>
+                                        <span id="profileEmail">zhangsan@university.edu.cn</span>
+                                    </div>
+                                    <div class="profile-info-item">
+                                        <label>电话：</label>
+                                        <span id="profilePhone">13800138000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 学习统计 -->
+                            <div class="profile-section">
+                                <h4>学习统计</h4>
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="totalCourses">5</div>
+                                        <div class="stat-label">总课程数</div>
+                                        <div class="stat-detail">已修：<span id="completedCourses">3</span> 当前：<span id="currentCourses">2</span></div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="totalCredits">15</div>
+                                        <div class="stat-label">总学分</div>
+                                        <div class="stat-detail">已获：<span id="completedCredits">9</span> 在读：<span id="currentCredits">6</span></div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="avgGrade">85</div>
+                                        <div class="stat-label">平均成绩</div>
+                                        <div class="stat-detail">基于<span id="gradedCourses">3</span>门课程</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="todoCompletionRate">60%</div>
+                                        <div class="stat-label">任务完成率</div>
+                                        <div class="stat-detail">已完成：<span id="completedTodoItems">6</span>/<span id="totalTodoItems">10</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 最近活动 -->
+                            <div class="profile-section">
+                                <h4>最近活动</h4>
+                                <div class="recent-activities">
+                                    <!-- 活动记录将通过JS动态生成 -->
+                                    <div class="no-data">正在加载活动记录...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/data/users.js"></script>
+    <script src="../js/data/students.js"></script>
+    <script src="../js/data/grades.js"></script>
+    <script src="../js/data/courses.js"></script>
+    <script src="../js/pages/student-portal.js"></script>
+</body>
+</html>

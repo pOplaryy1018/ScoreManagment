@@ -81,13 +81,15 @@ if (typeof module !== 'undefined' && module.exports) {
 // 课程数据管理 - 独立数据文件，供学生端和教师端共享
 
 // 基础课程数据（所有可用课程）
-const allCoursesData = [
+const coursesData = [
     { 
         id: 'CS101', 
         name: '计算机科学导论', 
         credit: 3, 
         teacher: '李教授', 
         capacity: 30,
+        department: '计算机学院',
+        requirements: '无先修课程要求，适合所有专业学生',
         description: '计算机科学基础课程，介绍计算机系统、编程基础等',
         todoItems: [
             { id: 1, type: '课件', title: '第一章 计算机基础', description: '学习计算机基本概念', dueDate: '2024-12-28', completed: false },
@@ -100,6 +102,8 @@ const allCoursesData = [
         credit: 4, 
         teacher: '王教授', 
         capacity: 40,
+        department: '数学学院',
+        requirements: '高中数学基础，建议理工科专业学生选修',
         description: '数学基础课程，涵盖微积分、线性代数等',
         todoItems: [
             { id: 3, type: '课件', title: '第一章 函数与极限', description: '学习函数与极限概念', dueDate: '2024-12-25', completed: false },
@@ -112,6 +116,8 @@ const allCoursesData = [
         credit: 3, 
         teacher: '张教授', 
         capacity: 35,
+        department: '物理学院',
+        requirements: '高中数学基础，建议理工科专业学生选修',
         description: '物理学基础课程，涵盖力学、电磁学等',
         todoItems: [
             { id: 5, type: '课件', title: '第一章 力学基础', description: '学习牛顿运动定律', dueDate: '2025-01-03', completed: false },
@@ -124,6 +130,8 @@ const allCoursesData = [
         credit: 2, 
         teacher: '刘教授', 
         capacity: 25,
+        department: '外国语学院',
+        requirements: '高中英语基础，所有专业学生必修',
         description: '英语语言课程，提高听说读写能力',
         todoItems: [
             { id: 7, type: '课件', title: '第一章 英语基础', description: '学习基础英语语法', dueDate: '2024-12-27', completed: false },
@@ -136,6 +144,8 @@ const allCoursesData = [
         credit: 3, 
         teacher: '陈教授', 
         capacity: 30,
+        department: '计算机学院',
+        requirements: '建议先修计算机科学导论，计算机专业学生必修',
         description: '编程入门课程，学习基础编程概念和技巧',
         todoItems: []
     },
@@ -145,6 +155,8 @@ const allCoursesData = [
         credit: 3, 
         teacher: '张教授', 
         capacity: 30,
+        department: '计算机学院',
+        requirements: '程序设计基础课程，计算机专业学生必修',
         description: '数据结构与算法课程，学习常用数据结构和算法',
         todoItems: [
             { id: 9, type: '课件', title: '第一章 线性表', description: '学习线性表的基本概念和操作', dueDate: '2024-12-25', completed: false },
@@ -158,6 +170,8 @@ const allCoursesData = [
         credit: 3, 
         teacher: '赵教授', 
         capacity: 35,
+        department: '数学学院',
+        requirements: '高等数学基础，理工科专业学生建议选修',
         description: '线性代数课程，学习矩阵、向量空间等',
         todoItems: [
             { id: 12, type: '课件', title: '第一章 行列式', description: '学习行列式的定义和性质', dueDate: '2024-12-20', completed: false },
@@ -180,12 +194,12 @@ let studentCourseData = {
 const courseManager = {
     // 获取所有可用课程
     getAllCourses: function() {
-        return [...allCoursesData];
+        return [...coursesData];
     },
     
     // 根据ID获取课程信息
     getCourseById: function(courseId) {
-        return allCoursesData.find(course => course.id === courseId);
+        return coursesData.find(course => course.id === courseId);
     },
     
     // 获取学生当前学期已选课程
@@ -217,6 +231,8 @@ const courseManager = {
             name: course.name,
             credit: course.credit,
             teacher: course.teacher,
+            department: course.department,
+            requirements: course.requirements,
             semester: '2024-2025-1',
             semesterName: '2024-2025学年第一学期',
             status: '正在修读',
@@ -252,7 +268,7 @@ const courseManager = {
         const unavailableCourseIds = [...new Set([...allTakenCourseIds, ...currentSelectedCourseIds])];
         
         // 过滤出可选的课程
-        return allCoursesData.filter(course => !unavailableCourseIds.includes(course.id));
+        return coursesData.filter(course => !unavailableCourseIds.includes(course.id));
     },
     
     // 初始化学生课程数据（模拟历史数据）
@@ -268,6 +284,8 @@ const courseManager = {
                 name: '程序设计基础', 
                 credit: 3, 
                 teacher: '陈教授', 
+                department: '计算机学院',
+                requirements: '建议先修计算机科学导论，计算机专业学生必修',
                 semester: '2023-2024-1',
                 semesterName: '2023-2024学年第一学期',
                 status: '已修完',
@@ -279,6 +297,8 @@ const courseManager = {
                 name: '高等数学', 
                 credit: 4, 
                 teacher: '王教授', 
+                department: '数学学院',
+                requirements: '高中数学基础，建议理工科专业学生选修',
                 semester: '2023-2024-1',
                 semesterName: '2023-2024学年第一学期',
                 status: '已修完',
@@ -290,6 +310,8 @@ const courseManager = {
                 name: '大学英语', 
                 credit: 2, 
                 teacher: '刘教授', 
+                department: '外国语学院',
+                requirements: '高中英语基础，所有专业学生必修',
                 semester: '2023-2024-2',
                 semesterName: '2023-2024学年第二学期',
                 status: '已修完',
@@ -305,6 +327,8 @@ const courseManager = {
                 name: '数据结构', 
                 credit: 3, 
                 teacher: '张教授', 
+                department: '计算机学院',
+                requirements: '程序设计基础课程，计算机专业学生必修',
                 semester: '2024-2025-1',
                 semesterName: '2024-2025学年第一学期',
                 status: '正在修读',
@@ -320,6 +344,8 @@ const courseManager = {
                 name: '线性代数', 
                 credit: 3, 
                 teacher: '赵教授', 
+                department: '数学学院',
+                requirements: '高等数学基础，理工科专业学生建议选修',
                 semester: '2024-2025-1',
                 semesterName: '2024-2025学年第一学期',
                 status: '正在修读',
@@ -345,5 +371,5 @@ const courseManager = {
 
 // 导出供其他文件使用
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { allCoursesData, studentCourseData, courseManager };
+    module.exports = { coursesData, studentCourseData, courseManager };
 }

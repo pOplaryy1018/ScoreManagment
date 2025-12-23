@@ -9,6 +9,404 @@
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/modules/teacher.css">
     <link rel="stylesheet" href="../css/modules/dashboard.css">
+    <style>
+        /* 富文本编辑器样式 */
+        .rich-text-editor-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .editor-toolbar {
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .editor-btn {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 6px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .editor-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .editor-btn:active {
+            background: #dee2e6;
+        }
+        
+        .rich-text-editor {
+            min-height: 120px;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.5;
+            outline: none;
+            overflow-y: auto;
+        }
+        
+        .rich-text-editor:empty:before {
+            content: attr(placeholder);
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .rich-text-editor:focus {
+            border-color: #007bff;
+        }
+        
+        /* 课程编辑表单样式增强 */
+        .course-edit-section {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .form-section {
+            margin-bottom: 32px;
+        }
+        
+        .form-section h3 {
+            margin-bottom: 16px;
+            color: #495057;
+            font-size: 18px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        /* 筛选工具栏布局 */
+        .filter-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-width: 260px;
+        }
+
+        .filter-group .search-input {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .filter-group .filter-select {
+            min-width: 160px;
+        }
+
+        .action-group {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 课程状态统计面板样式 */
+        .status-stats-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .stat-item.total {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .stat-item.draft {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .stat-item.published {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .stat-item.withdrawn {
+            background: linear-gradient(135deg, #fd746c 0%, #ff9068 100%);
+            color: white;
+        }
+        
+        .stat-item.archived {
+            background: linear-gradient(135deg, #a8caba 0%, #5d4157 100%);
+            color: white;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 操作按钮样式 */
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .action-disabled {
+            padding: 4px 8px;
+            background: #e9ecef;
+            color: #6c757d;
+            border-radius: 3px;
+            font-size: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 24px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        /* 课件上传样式 */
+        .material-upload-area {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .upload-header h4 {
+            margin: 0 0 8px 0;
+            color: #495057;
+        }
+        
+        .upload-tip {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .file-upload-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 6px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-upload-zone:hover {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+        
+        .file-upload-zone.dragover {
+            border-color: #007bff;
+            background: #e7f3ff;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.7;
+        }
+        
+        .upload-text {
+            color: #6c757d;
+            margin-bottom: 16px;
+        }
+        
+        .material-list {
+            margin-top: 20px;
+        }
+        
+        .empty-materials {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .material-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .material-item__icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        
+        .material-item__info {
+            flex: 1;
+        }
+        
+        .material-item__name {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .material-item__meta {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .material-item__delete {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .material-item__delete:hover {
+            background: #f8d7da;
+        }
+        
+        /* 轮播图管理样式 */
+        .carousel-management {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .carousel-header h4 {
+            margin: 0 0 8px 0;
+            color: #495057;
+        }
+        
+        .carousel-tip {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .carousel-upload-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 6px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-upload-zone:hover {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+        
+        .carousel-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .carousel-item {
+            position: relative;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .carousel-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+        
+        .carousel-item__delete {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .empty-carousel {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 40px;
+            grid-column: 1 / -1;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -34,25 +432,25 @@
                     <ul>
                         <li class="nav-item active">
                             <a href="#" class="nav-link" data-page="course-management">
-                                <img src="../public/images/icons/course.svg" alt="课程管理" class="nav-icon">
+                                <img src="../public/images/icons/我的课程.png" alt="课程管理" class="nav-icon">
                                 <span>课程管理</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link" data-page="assignments">
-                                <img src="../public/images/icons/assignment.svg" alt="作业管理" class="nav-icon">
+                                <img src="../public/images/icons/课程选择.png" alt="作业管理" class="nav-icon">
                                 <span>作业管理</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link" data-page="exams">
-                                <img src="../public/images/icons/exam.svg" alt="考试管理" class="nav-icon">
+                                <img src="../public/images/icons/成绩查询.png" alt="考试管理" class="nav-icon">
                                 <span>考试管理</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link" data-page="grade-entry">
-                                <img src="../public/images/icons/grade.svg" alt="成绩录入" class="nav-icon">
+                                <img src="../public/images/icons/待办事项.png" alt="成绩录入" class="nav-icon">
                                 <span>成绩录入</span>
                             </a>
                         </li>
@@ -69,6 +467,55 @@
                         <p>管理您负责的课程信息</p>
                     </div>
                     
+                    <!-- 筛选工具栏 -->
+                    <div class="filter-toolbar">
+                        <div class="filter-group">
+                            <input type="text" id="courseSearch" placeholder="搜索课程名称..." class="search-input">
+                            <select id="semesterFilter" class="filter-select">
+                                <option value="">全部学期</option>
+                                <option value="2024-2025学年第一学期">2024-2025学年第一学期</option>
+                                <option value="2024-2025学年第二学期">2024-2025学年第二学期</option>
+                                <option value="2023-2024学年第一学期">2023-2024学年第一学期</option>
+                                <option value="2023-2024学年第二学期">2023-2024学年第二学期</option>
+                            </select>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="">全部状态</option>
+                                <option value="draft">草稿</option>
+                                <option value="published">已发布</option>
+                                <option value="withdrawn">已撤回</option>
+                            </select>
+                        </div>
+                        <div class="action-group">
+                            <button id="addCourseBtn" class="btn btn-primary">
+                                <span class="btn-icon">+</span>新建课程
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 课程状态统计面板 -->
+                    <div class="status-stats-panel">
+                        <div class="stats-grid">
+                            <div class="stat-item total">
+                                <div class="stat-value" id="totalCourses">0</div>
+                                <div class="stat-label">总课程数</div>
+                            </div>
+                            <div class="stat-item draft">
+                                <div class="stat-value" id="draftCourses">0</div>
+                                <div class="stat-label">草稿</div>
+                            </div>
+                            <div class="stat-item published">
+                                <div class="stat-value" id="publishedCourses">0</div>
+                                <div class="stat-label">已发布</div>
+                            </div>
+                            <div class="stat-item withdrawn">
+                                <div class="stat-value" id="withdrawnCourses">0</div>
+                                <div class="stat-label">已撤回</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 课程列表表格 -->
                     <div class="teacher-table-container">
                         <table class="teacher-table">
                             <thead>
@@ -88,6 +535,147 @@
                             </tbody>
                         </table>
                     </div>
+                    
+                    <!-- 课程编辑区域 -->
+                    <div id="courseEditSection" class="course-edit-section" style="display: none;">
+                        <div class="edit-header">
+                            <h2 id="editSectionTitle">新建课程</h2>
+                            <button id="backToListBtn" class="btn btn-outline">返回列表</button>
+                        </div>
+                        
+                        <form id="courseForm" class="course-form">
+                            <!-- 基础信息 -->
+                            <div class="form-section">
+                                <h3>基础信息</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="courseName">课程名称 *</label>
+                                        <input type="text" id="courseName" name="courseName" required>
+                                        <div id="courseNameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="courseCredit">学分</label>
+                                        <input type="number" id="courseCredit" name="courseCredit" min="1" max="10" value="3">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="courseHours">学时</label>
+                                        <input type="number" id="courseHours" name="courseHours" min="16" max="128" value="48">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="courseSemester">学期</label>
+                                        <select id="courseSemester" name="courseSemester">
+                                            <option value="2024-2025学年第一学期">2024-2025学年第一学期</option>
+                                            <option value="2024-2025学年第二学期">2024-2025学年第二学期</option>
+                                            <option value="2023-2024学年第一学期">2023-2024学年第一学期</option>
+                                            <option value="2023-2024学年第二学期">2023-2024学年第二学期</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 课程简介 -->
+                            <div class="form-section">
+                                <h3>课程简介</h3>
+                                <div class="form-group">
+                                    <label for="courseDescription">课程描述</label>
+                                    <div class="rich-text-editor-container">
+                                        <div class="editor-toolbar">
+                                            <button type="button" class="editor-btn" data-command="bold" title="粗体"><strong>B</strong></button>
+                                            <button type="button" class="editor-btn" data-command="italic" title="斜体"><em>I</em></button>
+                                            <button type="button" class="editor-btn" data-command="underline" title="下划线"><u>U</u></button>
+                                            <button type="button" class="editor-btn" data-command="insertUnorderedList" title="无序列表">•</button>
+                                            <button type="button" class="editor-btn" data-command="insertOrderedList" title="有序列表">1.</button>
+                                            <button type="button" class="editor-btn" data-command="createLink" title="插入链接">🔗</button>
+                                            <button type="button" class="editor-btn" data-command="formatBlock" data-value="h2" title="标题">H2</button>
+                                            <button type="button" class="editor-btn" data-command="formatBlock" data-value="h3" title="小标题">H3</button>
+                                            <button type="button" class="editor-btn" data-command="removeFormat" title="清除格式">🗑️</button>
+                                        </div>
+                                        <div id="courseDescription" class="rich-text-editor" contenteditable="true" placeholder="请输入课程描述..."></div>
+                                        <textarea id="courseDescriptionText" name="courseDescription" style="display: none;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="courseRequirements">选课要求</label>
+                                    <div class="rich-text-editor-container">
+                                        <div class="editor-toolbar">
+                                            <button type="button" class="editor-btn" data-command="bold" title="粗体"><strong>B</strong></button>
+                                            <button type="button" class="editor-btn" data-command="italic" title="斜体"><em>I</em></button>
+                                            <button type="button" class="editor-btn" data-command="underline" title="下划线"><u>U</u></button>
+                                            <button type="button" class="editor-btn" data-command="insertUnorderedList" title="无序列表">•</button>
+                                            <button type="button" class="editor-btn" data-command="insertOrderedList" title="有序列表">1.</button>
+                                            <button type="button" class="editor-btn" data-command="removeFormat" title="清除格式">🗑️</button>
+                                        </div>
+                                        <div id="courseRequirements" class="rich-text-editor" contenteditable="true" placeholder="请输入选课要求..."></div>
+                                        <textarea id="courseRequirementsText" name="courseRequirements" style="display: none;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 课件管理 -->
+                            <div class="form-section">
+                                <h3>课件管理</h3>
+                                <div class="material-upload-area">
+                                    <div class="upload-header">
+                                        <h4>上传课件</h4>
+                                        <span class="upload-tip">支持 PDF、DOCX、JPG、PNG、MP3、MP4 格式，单个文件不超过50MB</span>
+                                    </div>
+                                    <div class="file-upload-zone" id="fileUploadZone">
+                                        <div class="upload-icon">📁</div>
+                                        <p class="upload-text">拖拽文件到此处或点击上传</p>
+                                        <input type="file" id="materialUpload" multiple accept=".pdf,.docx,.jpg,.jpeg,.png,.mp3,.mp4" style="display: none;">
+                                        <button type="button" class="btn btn-outline" onclick="document.getElementById('materialUpload').click()">选择文件</button>
+                                    </div>
+                                    <div class="material-list" id="materialList">
+                                        <div class="empty-materials">暂无课件</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 轮播图管理 -->
+                            <div class="form-section">
+                                <h3>轮播图管理</h3>
+                                <div class="carousel-management">
+                                    <div class="carousel-header">
+                                        <h4>课程封面轮播图</h4>
+                                        <span class="carousel-tip">最多可上传5张图片作为课程封面轮播图</span>
+                                    </div>
+                                    <div class="carousel-upload-zone" id="carouselUploadZone">
+                                        <div class="upload-icon">🖼️</div>
+                                        <p class="upload-text">拖拽图片到此处或点击上传</p>
+                                        <input type="file" id="carouselUpload" multiple accept="image/*" style="display: none;">
+                                        <button type="button" class="btn btn-outline" onclick="document.getElementById('carouselUpload').click()">选择图片</button>
+                                    </div>
+                                    <div class="carousel-preview" id="carouselPreview">
+                                        <div class="empty-carousel">暂无轮播图</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 课程设置 -->
+                            <div class="form-section">
+                                <h3>课程设置</h3>
+                                <div class="form-checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enableComments" name="enableComments">
+                                        <span class="checkmark"></span>
+                                        开启评论区
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="enableNotes" name="enableNotes">
+                                        <span class="checkmark"></span>
+                                        开启笔记区
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- 表单操作 -->
+                            <div class="form-actions">
+                                <button type="button" id="saveDraftBtn" class="btn btn-outline">保存草稿</button>
+                                <button type="button" id="previewBtn" class="btn btn-secondary">预览</button>
+                                <button type="submit" class="btn btn-primary">发布课程</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- 作业管理内容 -->
@@ -96,28 +684,8 @@
                         <h2>作业管理</h2>
                         <p>发布和管理作业</p>
                     </div>
-                    <div class="teacher-cards">
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">📝</div>
-                            <div class="teacher-card-content">
-                                <h3>发布新作业</h3>
-                                <p>创建新的作业任务，设置截止日期和评分标准</p>
-                            </div>
-                        </div>
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">📊</div>
-                            <div class="teacher-card-content">
-                                <h3>作业统计</h3>
-                                <p>查看学生提交情况和作业完成率</p>
-                            </div>
-                        </div>
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">✅</div>
-                            <div class="teacher-card-content">
-                                <h3>批改作业</h3>
-                                <p>批改学生提交的作业并给出评分</p>
-                            </div>
-                        </div>
+                    <div id="assignment-module-container">
+                        <!-- 作业及考试管理模块将通过JS动态生成 -->
                     </div>
                 </div>
 
@@ -127,59 +695,19 @@
                         <h2>考试管理</h2>
                         <p>组织和管理考试</p>
                     </div>
-                    <div class="teacher-cards">
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">📋</div>
-                            <div class="teacher-card-content">
-                                <h3>创建考试</h3>
-                                <p>设置考试时间、地点和考试内容</p>
-                            </div>
-                        </div>
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">📈</div>
-                            <div class="teacher-card-content">
-                                <h3>考试安排</h3>
-                                <p>查看考试安排和监考任务</p>
-                            </div>
-                        </div>
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">📊</div>
-                            <div class="teacher-card-content">
-                                <h3>成绩分析</h3>
-                                <p>分析考试成绩分布和统计信息</p>
-                            </div>
-                        </div>
+                    <div id="exam-module-container">
+                        <!-- 考试管理模块将通过JS动态生成 -->
                     </div>
                 </div>
 
-                <!-- 成绩录入内容 -->
+                <!-- 成绩管理内容 -->
                 <div id="grade-entry-content" class="page-content" style="display: none;">
                     <div class="content-header">
-                        <h2>成绩录入</h2>
-                        <p>录入和管理学生成绩</p>
+                        <h2>成绩管理</h2>
+                        <p>设置成绩构成、录入和管理学生成绩</p>
                     </div>
-                    <div class="teacher-cards">
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">✏️</div>
-                            <div class="teacher-card-content">
-                                <h3>批量录入</h3>
-                                <p>批量导入学生成绩数据</p>
-                            </div>
-                        </div>
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">📊</div>
-                            <div class="teacher-card-content">
-                                <h3>成绩统计</h3>
-                                <p>查看成绩分布和统计分析</p>
-                            </div>
-                        </div>
-                        <div class="teacher-card">
-                            <div class="teacher-card-icon">📈</div>
-                            <div class="teacher-card-content">
-                                <h3>成绩报表</h3>
-                                <p>生成成绩报表和导出功能</p>
-                            </div>
-                        </div>
+                    <div id="grade-module-container">
+                        <!-- 成绩管理模块将通过JS动态生成 -->
                     </div>
                 </div>
             </main>
@@ -188,164 +716,20 @@
 
     <!-- JavaScript -->
     <script src="../js/utils.js"></script>
+    <script src="../js/modules/auth.js"></script>
     <script src="../js/data/courses.js"></script>
+    <script src="../js/modules/UIModule.js"></script>
+    <script src="../js/modules/CourseModule.js"></script>
+    <script src="../js/modules/AssignmentModule.js"></script>
+    <script src="../js/modules/GradeModule.js"></script>
+    <script src="../js/modules/FileUploadHelper.js"></script>
     <script src="../js/pages/teacher-manage.js"></script>
     
     <script>
         // 页面加载时的权限检查
-        document.addEventListener('DOMContentLoaded', function() {
-            // 检查用户权限
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            
-            if (!currentUser || currentUser.role !== 'teacher') {
-                alert('您没有访问教师端的权限，请重新登录！');
-                window.location.href = '../index.html';
-                return;
-            }
-            
-            // 更新用户信息显示
-            const userNameElement = document.getElementById('userName');
-            if (userNameElement) {
-                userNameElement.textContent = currentUser.name || '教师';
-            }
-            
-            // 绑定退出登录事件
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function() {
-                    if (confirm('确定要退出登录吗？')) {
-                        localStorage.removeItem('currentUser');
-                        localStorage.removeItem('loginState');
-                        window.location.href = '../index.html';
-                    }
-                });
-            }
-            
-            // 绑定菜单点击事件
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // 更新菜单激活状态
-                    navLinks.forEach(l => {
-                        l.parentElement.classList.remove('active');
-                    });
-                    this.parentElement.classList.add('active');
-                    
-                    // 根据页面显示不同内容
-                    const page = this.dataset.page;
-                    showPageContent(page);
-                });
-            });
-            
-            // 初始化显示课程管理页面
-            loadCourseData();
+        initTeacherPage(function() {
+            console.log('教师页面初始化完成');
         });
-        
-        // 显示页面内容
-        function showPageContent(page) {
-            // 隐藏所有页面内容
-            document.querySelectorAll('.page-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            switch (page) {
-                case 'course-management':
-                    document.getElementById('course-management-content').style.display = 'block';
-                    loadCourseData();
-                    break;
-                case 'assignments':
-                    document.getElementById('assignments-content').style.display = 'block';
-                    break;
-                case 'exams':
-                    document.getElementById('exams-content').style.display = 'block';
-                    break;
-                case 'grade-entry':
-                    document.getElementById('grade-entry-content').style.display = 'block';
-                    break;
-                default:
-                    document.getElementById('course-management-content').style.display = 'block';
-                    loadCourseData();
-            }
-        }
-        
-        // 加载课程数据
-        function loadCourseData() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            const courseTableBody = document.getElementById('courseTableBody');
-            
-            if (!courseTableBody) return;
-            
-            // 模拟教师课程数据
-            const teacherCourses = [
-                {
-                    id: 'CS101',
-                    name: '计算机科学导论',
-                    semester: '2024-2025学年第一学期',
-                    credit: 3,
-                    hours: 48,
-                    students: 45,
-                    status: '进行中'
-                },
-                {
-                    id: 'MATH201',
-                    name: '高等数学',
-                    semester: '2024-2025学年第一学期',
-                    credit: 4,
-                    hours: 64,
-                    students: 60,
-                    status: '进行中'
-                },
-                {
-                    id: 'ENG101',
-                    name: '大学英语',
-                    semester: '2024-2025学年第一学期',
-                    credit: 2,
-                    hours: 32,
-                    students: 50,
-                    status: '进行中'
-                },
-                {
-                    id: 'PHY201',
-                    name: '大学物理',
-                    semester: '2024-2025学年第一学期',
-                    credit: 4,
-                    hours: 64,
-                    students: 55,
-                    status: '进行中'
-                }
-            ];
-            
-            // 生成课程表格
-            courseTableBody.innerHTML = teacherCourses.map(course => `
-                <tr>
-                    <td>${course.id}</td>
-                    <td>${course.name}</td>
-                    <td>${course.semester}</td>
-                    <td>${course.credit}</td>
-                    <td>${course.hours}</td>
-                    <td>${course.students}</td>
-                    <td><span class="status-badge status-${course.status === '进行中' ? 'active' : 'inactive'}">${course.status}</span></td>
-                    <td>
-                        <button class="btn btn-outline" onclick="viewCourseDetail('${course.id}')">查看</button>
-                        <button class="btn btn-primary" onclick="editCourse('${course.id}')">编辑</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        // 查看课程详情
-        function viewCourseDetail(courseId) {
-            alert(`查看课程详情：${courseId}`);
-            // 这里可以跳转到课程详情页面或显示模态框
-        }
-        
-        // 编辑课程
-        function editCourse(courseId) {
-            alert(`编辑课程：${courseId}`);
-            // 这里可以跳转到课程编辑页面或显示编辑表单
-        }
     </script>
 </body>
 </html>

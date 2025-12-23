@@ -8,19 +8,22 @@
 .header {
     background: var(--white);
     box-shadow: var(--shadow-sm);
-    padding: var(--space-md) 0;
+    padding: clamp(12px, 1.8vw, 20px) 0;
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
 }
 
 .header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--space-md);
+    width: 100%;
+    max-width: none;
+    padding: 0 clamp(12px, 2vw, 20px);
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .logo {
@@ -49,9 +52,12 @@
 /* 主要内容布局 */
 .main-content {
     display: flex;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--space-lg);
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: clamp(12px, 2vw, 20px);
+    box-sizing: border-box;
+    gap: clamp(12px, 2vw, 20px);
 }
 
 /* 侧边栏样式 */
@@ -60,7 +66,7 @@
     background: var(--white);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    margin-right: var(--space-lg);
+    margin-right: clamp(12px, 2vw, 20px);
     height: fit-content;
 }
 

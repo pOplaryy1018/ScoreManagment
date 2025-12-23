@@ -11,6 +11,27 @@ const LOGIN_CONFIG = {
 };
 
 // ===================
+// 角色页面映射
+// ===================
+
+/**
+ * 获取角色对应的页面
+ * @param {string} role 用户角色
+ * @returns {string} 对应的页面路径
+ */
+function getRoleBasedPage(role) {
+    const rolePages = {
+        'guest': 'pages/public-courses.html',             // 游客首页
+        'student': 'pages/student-portal.html',           // 学生首页
+        'teacher': 'pages/teacher-dashboard.html',        // 教师首页
+        'teaching_admin': 'pages/teaching-admin.html',    // 教学管理员首页
+        'admin': 'pages/grade-audit.html'                 // 系统管理员首页
+    };
+    return rolePages[role] || rolePages.guest;
+}
+
+
+// ===================
 // 会话有效期检查
 // ===================
 
@@ -19,27 +40,17 @@ const LOGIN_CONFIG = {
  * @returns {boolean}
  */
 function isSessionValid() {
+    if (window.Auth && typeof Auth.isSessionValid === 'function') {
+        return Auth.isSessionValid();
+    }
+
     const user = Utils.storage.get('user');
     const loginTime = Utils.storage.get('loginTime');
-
-    // 未登录
-    if (!user) {
-        return false;
-    }
-
-    // 没有登录时间记录，视为无效
-    if (!loginTime) {
-        return false;
-    }
-
-    // 检查是否过期
+    if (!user || !loginTime) return false;
     const now = Date.now();
-    if (now - loginTime > LOGIN_CONFIG.sessionDuration) {
-        return false;
-    }
-
-    return true;
+    return now - loginTime <= LOGIN_CONFIG.sessionDuration;
 }
+
 
 /**
  * 清除过期的会话
@@ -51,14 +62,18 @@ function clearExpiredSession() {
     if (user && loginTime) {
         const now = Date.now();
         if (now - loginTime > LOGIN_CONFIG.sessionDuration) {
-            // 会话已过期，清除登录状态
-            Utils.storage.remove('user');
-            Utils.storage.remove('token');
-            Utils.storage.remove('loginTime');
+            if (window.Auth && typeof Auth.clearSession === 'function') {
+                Auth.clearSession();
+            } else {
+                Utils.storage.remove('user');
+                Utils.storage.remove('token');
+                Utils.storage.remove('loginTime');
+            }
             console.log('登录会话已过期，已自动清除');
         }
     }
 }
+
 
 // ===================
 // 页面初始化
@@ -66,9 +81,16 @@ function clearExpiredSession() {
 document.addEventListener('DOMContentLoaded', function () {
     // 检查是否已登录且会话未过期
     if (isSessionValid()) {
-        Utils.navigateTo('pages/dashboard.html');
+        const user = Utils.storage.get('user');
+        const targetPage = getRoleBasedPage(user.role);
+        if (window.Auth && typeof Auth.navigateToHome === 'function') {
+            Auth.navigateToHome(user.role);
+        } else {
+            Utils.navigateTo(targetPage);
+        }
         return;
     }
+
 
     // 如果会话已过期，清除登录状态
     clearExpiredSession();
@@ -423,9 +445,13 @@ function handleLogin(e) {
                 clearRememberedUser();
             }
 
-            Utils.storage.set('user', user);
-            Utils.storage.set('token', 'mock_token_' + Date.now());
-            Utils.storage.set('loginTime', Date.now()); // 记录登录时间
+            if (window.Auth && typeof Auth.startSession === 'function') {
+                Auth.startSession(user);
+            } else {
+                Utils.storage.set('user', user);
+                Utils.storage.set('token', 'mock_token_' + Date.now());
+                Utils.storage.set('loginTime', Date.now());
+            }
 
             // 更新最后登录时间
             UserData.userService.updateUser(user.id, {
@@ -434,22 +460,16 @@ function handleLogin(e) {
 
             Utils.showMessage('登录成功！正在跳转...', 'success');
 
-            // 跳转到仪表板
+            // 跳转到对应角色首页
             setTimeout(() => {
                 const targetPage = getRoleBasedPage(user.role);
-                Utils.navigateTo(targetPage);
+                if (window.Auth && typeof Auth.navigateToHome === 'function') {
+                    Auth.navigateToHome(user.role);
+                } else {
+                    Utils.navigateTo(targetPage);
+                }
             }, 1000);
-            // 获取角色对应的页面
-            function getRoleBasedPage(role) {
-                const rolePages = {
-                    'student': 'pages/student-portal.html',           // 学生首页
-                    'teacher': 'pages/teacher-dashboard.html',        // 教师首页
-                    'teachadmin': 'pages/dashboard.html',             // 教学管理员首页
-                    'systemadmin': 'pages/dashboard.html',            // 系统管理员首页
-                    'admin': 'pages/dashboard.html'                   // 管理员首页
-                };
-                return rolePages[role] || 'pages/dashboard.html';
-            }
+
         } else {
             // 登录失败
             const result = recordFailedAttempt(username);

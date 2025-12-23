@@ -151,7 +151,7 @@ const coursesData = [
     id: 'PHY101',
     name: '大学物理',
     credit: 4,
-    teacher: '周教授',
+    teacher: '张老师',
     capacity: 60,
     department: '物理学院',
     requirements: '需先修《高等数学》',
@@ -168,7 +168,7 @@ const coursesData = [
     id: 'EE101',
     name: '电路分析基础',
     credit: 4,
-    teacher: '赵教授',
+    teacher: '王教授',
     capacity: 40,
     department: '电子工程学院',
     requirements: '需先修《高等数学》',
@@ -182,7 +182,7 @@ const coursesData = [
     id: 'ENG101',
     name: '大学英语',
     credit: 2,
-    teacher: '林老师',
+    teacher: '陈教授',
     capacity: 40,
     department: '外国语学院',
     requirements: '无先修课程要求',
@@ -208,6 +208,77 @@ const coursesData = [
     semester: '2024-2025学年第一学期',
     status: '已结束',
     todoItems: []
+  },
+  // ==============================================
+  // 新增课程数据（用于测试成绩登入功能）
+  // ==============================================
+  {
+    id: 'CS301A',
+    name: 'Python程序设计',
+    credit: 3,
+    teacher: '张老师',
+    capacity: 35,
+    department: '计算机学院',
+    requirements: '无先修课程要求，适合编程初学者',
+    description: 'Python语言基础、数据结构、面向对象编程、常用库使用',
+    hours: 48,
+    semester: '2024-2025学年第一学期',
+    status: '进行中',
+    todoItems: [
+      { id: 15, type: '课件', title: '第一章 Python基础语法', description: '学习Python基本语法和数据类型', dueDate: '2025-01-10', completed: false },
+      { id: 16, type: '作业', title: '实验一 基础编程练习', description: '完成Python基础编程题目', dueDate: '2025-01-15', completed: false }
+    ]
+  },
+  {
+    id: 'CS401A',
+    name: 'Web前端开发',
+    credit: 3,
+    teacher: '张老师',
+    capacity: 30,
+    department: '计算机学院',
+    requirements: '建议先修《Python程序设计》或《程序设计基础》',
+    description: 'HTML5、CSS3、JavaScript基础，响应式网页设计，前端框架介绍',
+    hours: 48,
+    semester: '2024-2025学年第一学期',
+    status: '进行中',
+    todoItems: [
+      { id: 17, type: '课件', title: '第一章 HTML5基础', description: '学习HTML5标签和语义化', dueDate: '2025-01-12', completed: false },
+      { id: 18, type: '作业', title: '实验一 个人简历网页', description: '使用HTML5和CSS3制作个人简历网页', dueDate: '2025-01-18', completed: false }
+    ]
+  },
+  {
+    id: 'MATH301',
+    name: '概率论与数理统计',
+    credit: 4,
+    teacher: '李老师',
+    capacity: 40,
+    department: '数学学院',
+    requirements: '需先修《高等数学》和《线性代数》',
+    description: '概率论基础、随机变量、统计推断、回归分析等',
+    hours: 64,
+    semester: '2024-2025学年第一学期',
+    status: '进行中',
+    todoItems: [
+      { id: 19, type: '课件', title: '第一章 概率论基础', description: '学习概率的基本概念和性质', dueDate: '2025-01-08', completed: false },
+      { id: 20, type: '作业', title: '习题一 概率计算', description: '完成概率相关计算题', dueDate: '2025-01-13', completed: false }
+    ]
+  },
+  {
+    id: 'MATH401',
+    name: '离散数学',
+    credit: 3,
+    teacher: '李老师',
+    capacity: 35,
+    department: '数学学院',
+    requirements: '建议先修《高等数学》，计算机专业学生必修',
+    description: '集合论、图论、逻辑学、组合数学等离散结构',
+    hours: 48,
+    semester: '2024-2025学年第一学期',
+    status: '进行中',
+    todoItems: [
+      { id: 21, type: '课件', title: '第一章 集合论', description: '学习集合的基本概念和运算', dueDate: '2025-01-11', completed: false },
+      { id: 22, type: '作业', title: '习题一 集合运算', description: '完成集合相关运算题', dueDate: '2025-01-16', completed: false }
+    ]
   }
 ];
 
@@ -224,8 +295,8 @@ const TEACHER_COURSES = {
   'teacher001': ['CS101', 'CS201'],
   'teacher002': ['ENG101', 'ENG301'],
   'teacher003': ['PHY101'],
-  'teacher1': ['CS101', 'CS201'],   // 兼容 users.js 中的 teacher1
-  'teacher2': ['MATH101', 'MATH201'] // 兼容 users.js 中的 teacher2
+  'teacher1': ['CS301A', 'CS401A'],   // 张老师：Python程序设计、Web前端开发
+  'teacher2': ['MATH301', 'MATH401'] // 李老师：概率论与数理统计、离散数学
 };
 
 // ==============================================
@@ -385,4 +456,14 @@ if (typeof module !== 'undefined' && module.exports) {
     getCourseById,
     getAllCourses
   };
+}
+
+// ==============================================
+// 导出（浏览器环境）
+// ==============================================
+if (typeof window !== 'undefined') {
+  window.coursesData = coursesData;
+  window.TEACHER_COURSES = TEACHER_COURSES;
+  window.CourseService = CourseService;
+  window.courseManager = courseManager;
 }

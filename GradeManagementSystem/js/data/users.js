@@ -13,6 +13,17 @@ const users = [
     },
     {
         id: 'user_002',
+        username: 'teaching_admin',
+        password: 'teaching123',
+        name: '教学管理员',
+        email: 'teaching@grademanagement.com',
+        role: 'teaching_admin',
+        avatar: '../public/images/icons/user.svg',
+        lastLogin: '2024-12-17 11:00:00',
+        status: 'active'
+    },
+    {
+        id: 'user_003',
         username: 'teacher1',
         password: 'teacher123',
         name: '张老师',
@@ -23,7 +34,7 @@ const users = [
         status: 'active'
     },
     {
-        id: 'user_003',
+        id: 'user_004',
         username: 'teacher2',
         password: 'teacher123',
         name: '李老师',
@@ -34,7 +45,7 @@ const users = [
         status: 'active'
     },
     {
-        id: 'user_004',
+        id: 'user_005',
         username: 'student1',
         password: 'student123',
         name: '王同学',

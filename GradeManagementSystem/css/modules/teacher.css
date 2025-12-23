@@ -252,6 +252,376 @@
   text-align: center;
 }
 
+/* 作业及考试管理模块样式 */
+.assignment-module {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* 标签页导航 */
+.assignment-tabs {
+  display: flex;
+  background: var(--background-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.assignment-tab {
+  flex: 1;
+  padding: var(--space-md) var(--space-lg);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.assignment-tab:hover {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+.assignment-tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  background: var(--white);
+}
+
+/* 标签页内容 */
+.assignment-tab-content {
+  display: none;
+  padding: var(--space-xl);
+}
+
+.assignment-tab-content.active {
+  display: block;
+}
+
+.assignment-form-section h3,
+.assignment-list-section h3 {
+  color: var(--primary-color);
+  margin-bottom: var(--space-lg);
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* 表单样式 */
+.assignment-form {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-group input,
+.form-group textarea {
+  padding: var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 文件上传区域 */
+.file-upload-area {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.file-upload-area.dragover {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.file-upload-icon {
+  font-size: 2rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.file-upload-text {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.file-upload-btn {
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.file-list {
+  margin-top: var(--space-md);
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm);
+  background: var(--background-color);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.file-name {
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.file-remove {
+  color: var(--error-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: var(--space-xs);
+}
+
+/* 表格样式 */
+.assignment-table-container {
+  overflow-x: auto;
+}
+
+.assignment-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+}
+
+.assignment-table th,
+.assignment-table td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.assignment-table th {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.assignment-table tr:hover {
+  background: var(--background-light);
+}
+
+/* 状态徽章 */
+.status-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-submitted {
+  background: var(--success-light);
+  color: var(--success-color);
+}
+
+.status-pending {
+  background: var(--warning-light);
+  color: var(--warning-color);
+}
+
+/* 操作按钮 */
+.btn-view {
+  background: var(--info-color);
+  color: var(--white);
+  border: none;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-view:hover {
+  background: var(--info-dark);
+}
+
+/* 模态框样式 */
+.submission-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: var(--space-lg);
+}
+
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modal-table th,
+.modal-table td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-table th {
+  background: var(--background-color);
+  font-weight: bold;
+}
+
+.grade-input {
+  width: 80px;
+  padding: var(--space-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.grade-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.preview-link {
+  color: var(--info-color);
+  text-decoration: none;
+  margin-left: var(--space-sm);
+}
+
+.preview-link:hover {
+  text-decoration: underline;
+}
+
+.modal-footer {
+  padding: var(--space-lg);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+}
+
+/* 空状态样式 */
+.empty-state {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .assignment-tabs {
+    flex-direction: column;
+  }
+  
+  .assignment-tab {
+    border-bottom: 1px solid var(--border-color);
+    border-right: none;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: var(--space-md);
+  }
+  
+  .modal-table {
+    font-size: 0.9rem;
+  }
+  
+  .modal-table th,
+  .modal-table td {
+    padding: var(--space-sm);
+  }
+}
+
 .material-item__info {
   flex: 1;
   min-width: 0;
@@ -275,6 +645,388 @@
 .material-item__meta {
   font-size: 0.8rem;
   color: var(--text-secondary);
+}
+
+/* ==============================================
+ * 课程选择面板样式
+ * ============================================== */
+
+.course-selection-panel {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-xl);
+}
+
+.course-selection-panel .panel-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.course-selection-panel .panel-header h2 {
+  color: var(--primary-color);
+  font-size: 1.75rem;
+  margin-bottom: var(--space-sm);
+}
+
+.course-selection-panel .panel-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.course-list {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.course-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 4px solid var(--primary-color);
+}
+
+.course-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.course-info {
+  flex: 1;
+  margin-right: var(--space-lg);
+}
+
+.course-info h3 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: var(--space-xs);
+}
+
+.course-id {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-xs);
+}
+
+.course-details {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-sm);
+}
+
+.course-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.select-course-btn {
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.no-courses {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-secondary);
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 成绩管理顶部导航 */
+.grade-navigation {
+  margin-bottom: var(--space-xl);
+  padding: var(--space-md);
+  background: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.back-to-courses {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-to-courses:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  margin: 0 var(--space-sm);
+  color: var(--text-secondary);
+}
+
+.current-course {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .course-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .course-info {
+    margin-right: 0;
+    margin-bottom: var(--space-md);
+  }
+  
+  .select-course-btn {
+    align-self: flex-end;
+  }
+}
+
+/* 成绩管理模块样式 */
+.grade-module {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.grade-components-section,
+.grade-entry-section {
+  padding: var(--space-xl);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.grade-components-section:last-child,
+.grade-entry-section:last-child {
+  border-bottom: none;
+}
+
+.grade-components-section h3,
+.grade-entry-section h3 {
+  color: var(--primary-color);
+  margin-bottom: var(--space-lg);
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* 成绩构成表格样式 */
+.components-table-container {
+  overflow-x: auto;
+  margin-bottom: var(--space-lg);
+}
+
+.components-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+}
+
+.components-table th,
+.components-table td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.components-table th {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.components-table tr:hover {
+  background: var(--background-light);
+}
+
+.components-table input {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.components-table input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* 操作按钮区域 */
+.components-actions,
+.grade-actions {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+/* 错误提示 */
+.error-message {
+  color: var(--error-color);
+  font-size: 0.9rem;
+  margin-top: var(--space-sm);
+  font-weight: 500;
+}
+
+/* 成绩录入表格样式 */
+.grade-table-container {
+  overflow-x: auto;
+  margin-bottom: var(--space-lg);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.grade-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  font-size: 0.9rem;
+}
+
+.grade-table th,
+.grade-table td {
+  padding: var(--space-sm);
+  text-align: center;
+  border: 1px solid var(--border-color);
+  min-width: 80px;
+}
+
+.grade-table th {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.grade-table th:first-child,
+.grade-table th:nth-child(2) {
+  position: sticky;
+  left: 0;
+  background: var(--primary-light);
+  z-index: 20;
+}
+
+.grade-table td:first-child,
+.grade-table td:nth-child(2) {
+  position: sticky;
+  left: 0;
+  background: var(--white);
+  z-index: 15;
+}
+
+.grade-table tr:hover td:first-child,
+.grade-table tr:hover td:nth-child(2) {
+  background: var(--background-light);
+}
+
+.grade-table tr:hover {
+  background: var(--background-light);
+}
+
+.grade-table input {
+  width: 100%;
+  padding: var(--space-xs);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.grade-table input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.grade-table .total-score {
+  font-weight: bold;
+  color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+/* 按钮样式 */
+.btn {
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-primary:disabled {
+  background: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--secondary-color);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--background-color);
+}
+
+.btn-danger {
+  background: var(--error-color);
+  color: var(--white);
+}
+
+.btn-danger:hover {
+  background: var(--error-dark);
+}
+
+.btn-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.8rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .grade-components-section,
+  .grade-entry-section {
+    padding: var(--space-lg);
+  }
+  
+  .components-actions,
+  .grade-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .grade-table-container {
+    font-size: 0.8rem;
+  }
+  
+  .grade-table th,
+  .grade-table td {
+    padding: var(--space-xs);
+    min-width: 60px;
+  }
 }
 
 .material-item__delete {

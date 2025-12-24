@@ -52,16 +52,52 @@
 .header {
     background: var(--white);
     box-shadow: var(--shadow-sm);
-    padding: var(--space-md) 0;
+    padding: clamp(12px, 1.8vw, 20px) 0;
     position: sticky;
     top: 0;
     z-index: 100;
+    width: 100%;
 }
 
 .header-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+    max-width: none;
+    padding: 0 clamp(12px, 2vw, 20px);
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    font-size: 0.9rem;
+}
+
+.user-info span {
+    color: var(--text-secondary);
 }
 
 /* 侧边栏布局 */
@@ -76,7 +112,7 @@
 
 .main-content {
     flex: 1;
-    padding: var(--space-lg);
+    padding: clamp(12px, 2vw, 20px);
     min-height: calc(100vh - 80px);
 }
 

@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成绩管理系统 - 教学管理员</title>
+    <link rel="icon" href="../public/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/modules/dashboard.css">
+    <style>
+        /* 教学管理员专用样式 */
+        .teaching-nav {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        
+        .teaching-nav-item {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .teaching-nav-item:hover {
+            background: #e9ecef;
+        }
+        
+        .teaching-nav-item.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .management-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .management-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .management-card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .checkbox-cell {
+            width: 40px;
+        }
+        
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            gap: 1px;
+            background: #ddd;
+            border: 1px solid #ddd;
+            margin-top: 15px;
+        }
+        
+        .timetable-header {
+            background: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .timetable-cell {
+            background: white;
+            padding: 8px;
+            min-height: 60px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .timetable-cell:hover {
+            background: #f0f8ff;
+        }
+        
+        .timetable-cell.occupied {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+        }
+        
+        .conflict-item {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .conflict-item strong {
+            color: #d32f2f;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #007bff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #007bff;
+            background: #f0f8ff;
+        }
+        
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .summary-item .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .summary-item .label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* 课程表样式 */
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 1px;
+            background: #ddd;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .timetable-header {
+            display: contents;
+        }
+
+        .time-header, .day-header {
+            background: #f8f9fa;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ddd;
+        }
+
+        .time-header {
+            background: #e9ecef;
+            font-weight: bold;
+        }
+
+        .timetable-body {
+            display: contents;
+        }
+
+        .timetable-row {
+            display: contents;
+        }
+
+        .time-cell {
+            background: #f8f9fa;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timetable-cell {
+            background: white;
+            min-height: 80px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timetable-cell:hover {
+            background: #f8f9fa;
+        }
+
+        .timetable-cell.drag-over {
+            background: #e3f2fd;
+            border: 2px dashed #2196f3;
+        }
+
+        .course-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 2px 0;
+            cursor: move;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .course-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .course-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .course-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .course-teacher {
+            font-size: 10px;
+            opacity: 0.9;
+            margin-bottom: 1px;
+        }
+
+        .course-room {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* 表格样式优化 */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin: 0 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../public/images/icons/favicon.png" alt="成绩管理系统" class="logo-img">
+                    <h1>成绩管理系统</h1>
+                </div>
+                <div class="user-info">
+                    <span id="userName">教学管理员</span>
+                    <button id="logoutBtn" class="btn btn-primary">退出登录</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <div class="main-content">
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <ul>
+                        <li class="nav-item active">
+                            <a href="#" class="nav-link" data-section="class-management">
+                                <img src="../public/images/icons/list.png" alt="班级管理" class="nav-icon">
+                                <span>班级管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="student-management">
+                                <img src="../public/images/icons/list.png" alt="学生管理" class="nav-icon">
+                                <span>学生管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="course-management-admin">
+                                <img src="../public/images/icons/filter.png" alt="课程管理" class="nav-icon">
+                                <span>课程管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="teacher-management">
+                                <img src="../public/images/icons/order.png" alt="教师管理" class="nav-icon">
+                                <span>教师管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-section="schedule-system">
+                                <img src="../public/images/icons/filter.png" alt="课程安排系统" class="nav-icon">
+                                <span>课程安排系统</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- 内容区域 -->
+            <main class="content">
+                <div class="content-header">
+                    <h2>教学基础数据管理</h2>
+                    <p>管理班级、课程安排和课程表生成</p>
+                </div>
+
+                <!-- 班级管理 -->
+                <div id="class-management" class="content-section active">
+
+                    <div class="stats-summary">
+                        <div class="summary-item">
+                            <div class="number" id="totalClasses">0</div>
+                            <div class="label">班级总数</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="number" id="totalStudents">0</div>
+                            <div class="label">学生总数</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="number" id="avgClassSize">0</div>
+                            <div class="label">平均班额</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="number" id="availableSeats">0</div>
+                            <div class="label">剩余名额</div>
+                        </div>
+                    </div>
+
+                    <div class="management-grid">
+                        <div class="management-card">
+                            <h3>班级信息维护</h3>
+                            <div class="form-group">
+                                <label>班级编号</label>
+                                <input type="text" id="classId" class="form-control" placeholder="如：CS202301">
+                            </div>
+                            <div class="form-group">
+                                <label>班级名称</label>
+                                <input type="text" id="className" class="form-control" placeholder="如：计算机科学与技术2023-1班">
+                            </div>
+                            <div class="form-group">
+                                <label>专业</label>
+                                <input type="text" id="classMajor" class="form-control" placeholder="如：计算机科学与技术">
+                            </div>
+                            <div class="form-group">
+                                <label>年级</label>
+                                <select id="classGrade" class="form-control">
+                                    <option value="2021">2021级</option>
+                                    <option value="2022">2022级</option>
+                                    <option value="2023" selected>2023级</option>
+                                    <option value="2024">2024级</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>最大容量</label>
+                                <input type="number" id="classCapacity" class="form-control" value="40" min="1" max="100">
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="addClassBtn">添加班级</button>
+                                <button class="btn btn-secondary" id="updateClassBtn">更新班级</button>
+                            </div>
+                        </div>
+
+                        <div class="management-card">
+                            <h3>学生批量导入</h3>
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-icon">📁</div>
+                                <p>点击或拖拽Excel文件到此处</p>
+                                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                                    支持格式：.xlsx, .xls<br>
+                                    包含字段：学号、姓名、性别、班级编号
+                                </p>
+                                <input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;">
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="downloadTemplateBtn">下载模板</button>
+                                <button class="btn btn-success" id="importBtn">开始导入</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="management-card">
+                        <h3>班级列表与学生分班</h3>
+                        <div class="form-group">
+                            <label>搜索班级</label>
+                            <input type="text" id="searchClass" class="form-control" placeholder="输入班级名称或编号">
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-cell">
+                                        <input type="checkbox" id="selectAllClasses">
+                                    </th>
+                                    <th>班级编号</th>
+                                    <th>班级名称</th>
+                                    <th>专业</th>
+                                    <th>年级</th>
+                                    <th>当前人数</th>
+                                    <th>最大容量</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classList">
+                                <!-- 班级列表将通过JS动态生成 -->
+                            </tbody>
+                        </table>
+                        <div class="btn-group">
+                            <button class="btn btn-warning" id="batchAssignBtn">批量分班</button>
+                            <button class="btn btn-info" id="exportClassBtn">导出班级信息</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学生管理 -->
+                <div id="student-management" class="content-section">
+                    <div class="management-grid">
+                        <div class="management-card">
+                            <h3>学生信息维护</h3>
+                            <div class="form-group">
+                                <label>学号</label>
+                                <input type="text" id="studentIdInput" class="form-control" placeholder="如：2024001">
+                            </div>
+                            <div class="form-group">
+                                <label>姓名</label>
+                                <input type="text" id="studentNameInput" class="form-control" placeholder="学生姓名">
+                            </div>
+                            <div class="form-group">
+                                <label>性别</label>
+                                <select id="studentGenderInput" class="form-control">
+                                    <option value="男">男</option>
+                                    <option value="女">女</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>班级编号</label>
+                                <input type="text" id="studentClassInput" class="form-control" placeholder="如：CS202301">
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="addStudentBtn">新增学生</button>
+                                <button class="btn btn-secondary" id="updateStudentBtn">更新学生</button>
+                                <button class="btn btn-danger" id="deleteStudentBtn">删除学生</button>
+                            </div>
+                        </div>
+                        <div class="management-card">
+                            <h3>学生列表</h3>
+                            <div class="form-group">
+                                <label>搜索学生</label>
+                                <input type="text" id="studentSearchInputAdmin" class="form-control" placeholder="按学号/姓名/班级/专业搜索">
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>学号</th>
+                                            <th>姓名</th>
+                                            <th>性别</th>
+                                            <th>班级</th>
+                                            <th>年级</th>
+                                            <th>专业</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 课程管理 -->
+                <div id="course-management-admin" class="content-section">
+                    <div class="management-grid">
+                        <div class="management-card">
+                            <h3>课程信息维护</h3>
+                            <div class="form-group">
+                                <label>课程编号</label>
+                                <input type="text" id="courseIdInputAdmin" class="form-control" placeholder="如：CS301A">
+                            </div>
+                            <div class="form-group">
+                                <label>课程名称</label>
+                                <input type="text" id="courseNameInputAdmin" class="form-control" placeholder="课程名称">
+                            </div>
+                            <div class="form-group">
+                                <label>授课教师</label>
+                                <input type="text" id="courseTeacherInputAdmin" class="form-control" placeholder="教师姓名">
+                            </div>
+                            <div class="form-group">
+                                <label>学分</label>
+                                <input type="number" id="courseCreditInputAdmin" class="form-control" value="3" min="1" max="10">
+                            </div>
+                            <div class="form-group">
+                                <label>学时</label>
+                                <input type="number" id="courseHoursInputAdmin" class="form-control" value="48" min="16" max="128">
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="addCourseBtnAdmin">新增课程</button>
+                                <button class="btn btn-secondary" id="updateCourseBtnAdmin">更新课程</button>
+                                <button class="btn btn-danger" id="deleteCourseBtnAdmin">删除课程</button>
+                            </div>
+                        </div>
+                        <div class="management-card">
+                            <h3>课程列表与成绩审核</h3>
+                            <div class="form-group">
+                                <label>搜索课程</label>
+                                <input type="text" id="courseSearchInputAdmin" class="form-control" placeholder="按编号/名称/教师搜索">
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>课程编号</th>
+                                            <th>课程名称</th>
+                                            <th>教师</th>
+                                            <th>学分</th>
+                                            <th>学时</th>
+                                            <th>状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="courseTableBodyAdmin"></tbody>
+                                </table>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-warning" id="runGradeAuditBtn">执行成绩审核</button>
+                                <button class="btn btn-success" id="publishGradesBtn">发布成绩</button>
+                            </div>
+                            <div id="gradeAuditResults" style="margin-top:10px;color:#555;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 教师管理 -->
+                <div id="teacher-management" class="content-section">
+                    <div class="management-grid">
+                        <div class="management-card">
+                            <h3>教师信息维护</h3>
+                            <div class="form-group">
+                                <label>教师编号</label>
+                                <input type="text" id="teacherIdInputAdmin" class="form-control" placeholder="如：teacher011">
+                            </div>
+                            <div class="form-group">
+                                <label>教师姓名</label>
+                                <input type="text" id="teacherNameInputAdmin" class="form-control" placeholder="教师姓名">
+                            </div>
+                            <div class="form-group">
+                                <label>院系</label>
+                                <input type="text" id="teacherDeptInputAdmin" class="form-control" placeholder="如：计算机科学系">
+                            </div>
+                            <div class="form-group">
+                                <label>职称</label>
+                                <input type="text" id="teacherTitleInputAdmin" class="form-control" placeholder="如：教授">
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="addTeacherBtnAdmin">新增教师</button>
+                                <button class="btn btn-secondary" id="updateTeacherBtnAdmin">更新教师</button>
+                                <button class="btn btn-danger" id="deleteTeacherBtnAdmin">删除教师</button>
+                            </div>
+                        </div>
+                        <div class="management-card">
+                            <h3>教师列表</h3>
+                            <div class="form-group">
+                                <label>搜索教师</label>
+                                <input type="text" id="teacherSearchInputAdmin" class="form-control" placeholder="按编号/姓名/院系/职称搜索">
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>编号</th>
+                                            <th>姓名</th>
+                                            <th>院系</th>
+                                            <th>职称</th>
+                                            <th>工作量</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="teacherTableBodyAdmin"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 课程安排系统容器 -->
+                <div id="schedule-system" class="content-section">
+
+                <!-- 课程安排系统 -->
+                <div id="course-scheduling" class="content-section">
+
+                    <div class="stats-summary">
+                        <div class="summary-item">
+                            <div class="number" id="totalCourses">0</div>
+                            <div class="label">课程总数</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="number" id="assignedCourses">0</div>
+                            <div class="label">已安排课程</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="number" id="conflictCount">0</div>
+                            <div class="label">冲突数量</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="number" id="availableRooms">0</div>
+                            <div class="label">可用教室</div>
+                        </div>
+                    </div>
+
+                    <div class="management-grid">
+                        <div class="management-card">
+                            <h3>学期开课计划</h3>
+                            <div class="form-group">
+                                <label>学期</label>
+                                <select id="semester" class="form-control">
+                                    <option value="2024-1">2024年春季学期</option>
+                                    <option value="2024-2" selected>2024年秋季学期</option>
+                                    <option value="2025-1">2025年春季学期</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>课程名称</label>
+                                <select id="courseSelect" class="form-control">
+                                    <option value="">选择课程</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>授课教师</label>
+                                <select id="teacherSelect" class="form-control">
+                                    <option value="">选择教师</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>上课班级</label>
+                                <select id="courseClassSelect" class="form-control">
+                                    <option value="">选择班级</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>学时</label>
+                                <input type="number" id="courseHours" class="form-control" value="64" min="16" max="128">
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="addCoursePlanBtn">添加到计划</button>
+                                <button class="btn btn-info" id="importMockCoursesBtn">导入模拟数据</button>
+                                <button class="btn btn-secondary" id="autoScheduleBtn">自动排课</button>
+                            </div>
+
+                        </div>
+
+                        <div class="management-card">
+                            <h3>教师与教室安排</h3>
+                            <div class="form-group">
+                                <label>教师工作量限制</label>
+                                <input type="number" id="teacherWorkload" class="form-control" value="20" min="1" max="40">
+                            </div>
+                            <div class="form-group">
+                                <label>教室类型</label>
+                                <select id="roomType" class="form-control">
+                                    <option value="lecture">阶梯教室</option>
+                                    <option value="lab">实验室</option>
+                                    <option value="computer">机房</option>
+                                    <option value="regular">普通教室</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>最小容量</label>
+                                <input type="number" id="minCapacity" class="form-control" value="30" min="1" max="200">
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="checkAvailabilityBtn">检查可用性</button>
+                                <button class="btn btn-warning" id="detectConflictsBtn">检测冲突</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="management-card">
+                        <h3>课程计划列表</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-cell">
+                                        <input type="checkbox" id="selectAllCourses">
+                                    </th>
+                                    <th>课程编号</th>
+                                    <th>课程名称</th>
+                                    <th>授课教师</th>
+                                    <th>上课班级</th>
+                                    <th>学时</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="coursePlanList">
+                                <!-- 课程计划列表将通过JS动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="management-card">
+                        <h3>冲突检测结果</h3>
+                        <div id="conflictList">
+                            <!-- 冲突列表将通过JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 课程表生成 -->
+                <div id="timetable" class="content-section">
+                    <div class="management-grid">
+                        <div class="management-card">
+                            <h3>课程表设置</h3>
+                            <div class="form-group">
+                                <label>选择班级</label>
+                                <select id="timetableClassSelect" class="form-control">
+                                    <option value="">选择班级</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>选择教师</label>
+                                <select id="timetableTeacherSelect" class="form-control">
+                                    <option value="">选择教师</option>
+                                </select>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="addTimetableBtn">添加课程</button>
+                                <button class="btn btn-success" id="generateTimetableBtn">生成课程表</button>
+                                <button class="btn btn-info" id="exportTimetableBtn">导出课程表</button>
+                            </div>
+                        </div>
+
+                        <div class="management-card">
+                            <h3>课程表统计</h3>
+                            <div class="stats-summary">
+                                <div class="summary-item">
+                                    <div class="number" id="totalCourses">0</div>
+                                    <div class="label">总课程数</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="number" id="weekCourses">0</div>
+                                    <div class="label">本周课程</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="number" id="conflictCount">0</div>
+                                    <div class="label">冲突数量</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="number" id="availableRooms">0</div>
+                                    <div class="label">可用教室</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="management-card">
+                        <h3>可视化课程表</h3>
+                        <div class="timetable-grid" id="timetableGrid">
+                            <!-- 课程表网格将通过JS动态生成 -->
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="TeachingAdminModule.clearTimetable()">清空课程表</button>
+                            <button class="btn btn-info" onclick="TeachingAdminModule.printTimetable()">打印课程表</button>
+                        </div>
+                    </div>
+
+                    <div class="management-card">
+                        <h3>课程表列表</h3>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>课程名称</th>
+                                        <th>教师姓名</th>
+                                        <th>班级名称</th>
+                                        <th>星期</th>
+                                        <th>节次</th>
+                                        <th>教室名称</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="timetableList">
+                                    <!-- 课程表列表将通过JS动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                </div> <!-- end schedule-system -->
+            </main>
+        </div>
+    </div>
+
+
+    <!-- 课程表模态框 -->
+    <div id="timetableModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>添加课程表项</h3>
+                <span class="close" onclick="TeachingAdminModule.closeTimetableModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="timetableForm">
+                    <div class="form-group">
+                        <label>选择课程</label>
+                        <select id="timetableCourseSelect" class="form-control" required>
+                            <option value="">选择课程</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>选择教师</label>
+                        <select id="timetableTeacherSelect" class="form-control" required>
+                            <option value="">选择教师</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>选择班级</label>
+                        <select id="timetableClassSelect" class="form-control" required>
+                            <option value="">选择班级</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>选择教室</label>
+                        <select id="timetableRoomSelect" class="form-control" required>
+                            <option value="">选择教室</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>星期</label>
+                        <select id="timetableDaySelect" class="form-control" required>
+                            <option value="">选择星期</option>
+                            <option value="1">周一</option>
+                            <option value="2">周二</option>
+                            <option value="3">周三</option>
+                            <option value="4">周四</option>
+                            <option value="5">周五</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>节次</label>
+                        <select id="timetableTimeSelect" class="form-control" required>
+                            <option value="">选择节次</option>
+                            <option value="1-2">第1-2节</option>
+                            <option value="3-4">第3-4节</option>
+                            <option value="5-6">第5-6节</option>
+                            <option value="7-8">第7-8节</option>
+                            <option value="9-10">第9-10节</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveTimetableBtn" onclick="TeachingAdminModule.saveTimetableItem()">保存</button>
+                <button type="button" class="btn btn-secondary" onclick="TeachingAdminModule.closeTimetableModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/modules/auth.js"></script>
+    <script src="../js/data/users.js"></script>
+    <script src="../js/data/students.js"></script>
+
+    <script src="../js/data/teachers.js"></script>
+    <script src="../js/data/classrooms.js"></script>
+    <script src="../js/data/courses.js"></script>
+    <script src="../js/modules/CourseModule.js"></script>
+    <script src="../js/pages/teaching-admin.js"></script>
+
+    <script>
+      (function() {
+        const rootSections = ['class-management','student-management','course-management-admin','teacher-management','schedule-system'];
+
+        function showRootSection(id) {
+          rootSections.forEach(sec => {
+            const el = document.getElementById(sec);
+            if (el) el.style.display = sec === id ? 'block' : 'none';
+          });
+          if (id === 'schedule-system') {
+            ['course-scheduling','timetable'].forEach(sec => {
+              const el = document.getElementById(sec);
+              if (el) el.style.display = 'block';
+            });
+          }
+        }
+
+        // ===== 数据读取与缓存 =====
+        const storageKeys = {
+          students: 'adminStudents',
+          courses: 'adminCourses',
+          teachers: 'adminTeachers'
+        };
+
+        function getStudentData() {
+          const cached = JSON.parse(localStorage.getItem(storageKeys.students) || 'null');
+          return Array.isArray(cached) && cached.length ? cached : (window.StudentsModule ? StudentsModule.getAllStudents() : []);
+        }
+        function saveStudentData(list) { localStorage.setItem(storageKeys.students, JSON.stringify(list)); }
+
+        function getCourseData() {
+          const cached = JSON.parse(localStorage.getItem(storageKeys.courses) || 'null');
+          return Array.isArray(cached) && cached.length ? cached : (window.coursesData ? [...coursesData] : []);
+        }
+        function saveCourseData(list) { localStorage.setItem(storageKeys.courses, JSON.stringify(list)); }
+
+        function getTeacherData() {
+          const cached = JSON.parse(localStorage.getItem(storageKeys.teachers) || 'null');
+          return Array.isArray(cached) && cached.length ? cached : (window.TeachersModule ? TeachersModule.getAllTeachers() : []);
+        }
+        function saveTeacherData(list) { localStorage.setItem(storageKeys.teachers, JSON.stringify(list)); }
+
+        // ===== 渲染函数 =====
+        function renderStudents(filter = '') {
+          const tbody = document.getElementById('studentTableBody');
+          if (!tbody) return;
+          const list = getStudentData();
+          const lower = filter.toLowerCase();
+          const filtered = filter ? list.filter(s =>
+            s.id.toLowerCase().includes(lower) ||
+            s.name.toLowerCase().includes(lower) ||
+            (s.classId||'').toLowerCase().includes(lower) ||
+            (s.major||'').toLowerCase().includes(lower)
+          ) : list;
+          tbody.innerHTML = filtered.map(s => `
+            <tr>
+              <td>${s.id}</td>
+              <td>${s.name}</td>
+              <td>${s.gender || ''}</td>
+              <td>${s.classId || ''}</td>
+              <td>${s.grade || ''}</td>
+              <td>${s.major || ''}</td>
+            </tr>
+          `).join('');
+        }
+
+        function renderCourses(filter = '') {
+          const tbody = document.getElementById('courseTableBodyAdmin');
+          if (!tbody) return;
+          const list = getCourseData();
+          const lower = filter.toLowerCase();
+          const filtered = filter ? list.filter(c =>
+            c.id.toLowerCase().includes(lower) ||
+            c.name.toLowerCase().includes(lower) ||
+            (c.teacher||'').toLowerCase().includes(lower)
+          ) : list;
+          tbody.innerHTML = filtered.map(c => `
+            <tr>
+              <td>${c.id}</td>
+              <td>${c.name}</td>
+              <td>${c.teacher || ''}</td>
+              <td>${c.credit || ''}</td>
+              <td>${c.hours || ''}</td>
+              <td>${c.status || '进行中'}</td>
+            </tr>
+          `).join('');
+        }
+
+        function renderTeachers(filter = '') {
+          const tbody = document.getElementById('teacherTableBodyAdmin');
+          if (!tbody) return;
+          const list = getTeacherData();
+          const lower = filter.toLowerCase();
+          const filtered = filter ? list.filter(t =>
+            t.id.toLowerCase().includes(lower) ||
+            t.name.toLowerCase().includes(lower) ||
+            (t.department||'').toLowerCase().includes(lower) ||
+            (t.title||'').toLowerCase().includes(lower)
+          ) : list;
+          tbody.innerHTML = filtered.map(t => `
+            <tr>
+              <td>${t.id}</td>
+              <td>${t.name}</td>
+              <td>${t.department || ''}</td>
+              <td>${t.title || ''}</td>
+              <td>${t.currentWorkload || 0}/${t.maxWorkload || 0}</td>
+            </tr>
+          `).join('');
+        }
+
+        // ===== CRUD 事件绑定 =====
+        function bindStudentEvents() {
+          const addBtn = document.getElementById('addStudentBtn');
+          const updBtn = document.getElementById('updateStudentBtn');
+          const delBtn = document.getElementById('deleteStudentBtn');
+          const searchInput = document.getElementById('studentSearchInputAdmin');
+
+          const getFormValues = () => ({
+            id: document.getElementById('studentIdInput').value.trim(),
+            name: document.getElementById('studentNameInput').value.trim(),
+            gender: document.getElementById('studentGenderInput').value,
+            classId: document.getElementById('studentClassInput').value.trim()
+          });
+
+          addBtn && addBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id || !data.name) return alert('请填写学号和姓名');
+            const list = getStudentData();
+            if (list.find(s => s.id === data.id)) return alert('学号已存在');
+            list.push({ ...data, grade: data.id.slice(0,4) || '', major: data.major || '' });
+            saveStudentData(list);
+            renderStudents(searchInput ? searchInput.value : '');
+          });
+
+          updBtn && updBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id) return alert('请输入要更新的学号');
+            const list = getStudentData();
+            const idx = list.findIndex(s => s.id === data.id);
+            if (idx === -1) return alert('未找到该学生');
+            list[idx] = { ...list[idx], ...data };
+            saveStudentData(list);
+            renderStudents(searchInput ? searchInput.value : '');
+          });
+
+          delBtn && delBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id) return alert('请输入要删除的学号');
+            const list = getStudentData().filter(s => s.id !== data.id);
+            saveStudentData(list);
+            renderStudents(searchInput ? searchInput.value : '');
+          });
+
+          searchInput && searchInput.addEventListener('input', e => renderStudents(e.target.value));
+        }
+
+        function bindCourseEvents() {
+          const addBtn = document.getElementById('addCourseBtnAdmin');
+          const updBtn = document.getElementById('updateCourseBtnAdmin');
+          const delBtn = document.getElementById('deleteCourseBtnAdmin');
+          const searchInput = document.getElementById('courseSearchInputAdmin');
+
+          const getFormValues = () => ({
+            id: document.getElementById('courseIdInputAdmin').value.trim(),
+            name: document.getElementById('courseNameInputAdmin').value.trim(),
+            teacher: document.getElementById('courseTeacherInputAdmin').value.trim(),
+            credit: parseInt(document.getElementById('courseCreditInputAdmin').value, 10) || 0,
+            hours: parseInt(document.getElementById('courseHoursInputAdmin').value, 10) || 0
+          });
+
+          addBtn && addBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id || !data.name) return alert('请填写课程编号和名称');
+            const list = getCourseData();
+            if (list.find(c => c.id === data.id)) return alert('课程编号已存在');
+            list.push({ ...data, status: '进行中' });
+            saveCourseData(list);
+            renderCourses(searchInput ? searchInput.value : '');
+          });
+
+          updBtn && updBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id) return alert('请输入课程编号');
+            const list = getCourseData();
+            const idx = list.findIndex(c => c.id === data.id);
+            if (idx === -1) return alert('未找到该课程');
+            list[idx] = { ...list[idx], ...data };
+            saveCourseData(list);
+            renderCourses(searchInput ? searchInput.value : '');
+          });
+
+          delBtn && delBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id) return alert('请输入要删除的课程编号');
+            const list = getCourseData().filter(c => c.id !== data.id);
+            saveCourseData(list);
+            renderCourses(searchInput ? searchInput.value : '');
+          });
+
+          searchInput && searchInput.addEventListener('input', e => renderCourses(e.target.value));
+        }
+
+        function bindTeacherEvents() {
+          const addBtn = document.getElementById('addTeacherBtnAdmin');
+          const updBtn = document.getElementById('updateTeacherBtnAdmin');
+          const delBtn = document.getElementById('deleteTeacherBtnAdmin');
+          const searchInput = document.getElementById('teacherSearchInputAdmin');
+
+          const getFormValues = () => ({
+            id: document.getElementById('teacherIdInputAdmin').value.trim(),
+            name: document.getElementById('teacherNameInputAdmin').value.trim(),
+            department: document.getElementById('teacherDeptInputAdmin').value.trim(),
+            title: document.getElementById('teacherTitleInputAdmin').value.trim()
+          });
+
+          addBtn && addBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id || !data.name) return alert('请填写教师编号和姓名');
+            const list = getTeacherData();
+            if (list.find(t => t.id === data.id)) return alert('教师编号已存在');
+            list.push({ ...data, maxWorkload: 20, currentWorkload: 0, status: 'active' });
+            saveTeacherData(list);
+            renderTeachers(searchInput ? searchInput.value : '');
+          });
+
+          updBtn && updBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id) return alert('请输入教师编号');
+            const list = getTeacherData();
+            const idx = list.findIndex(t => t.id === data.id);
+            if (idx === -1) return alert('未找到该教师');
+            list[idx] = { ...list[idx], ...data };
+            saveTeacherData(list);
+            renderTeachers(searchInput ? searchInput.value : '');
+          });
+
+          delBtn && delBtn.addEventListener('click', () => {
+            const data = getFormValues();
+            if (!data.id) return alert('请输入要删除的教师编号');
+            const list = getTeacherData().filter(t => t.id !== data.id);
+            saveTeacherData(list);
+            renderTeachers(searchInput ? searchInput.value : '');
+          });
+
+          searchInput && searchInput.addEventListener('input', e => renderTeachers(e.target.value));
+        }
+
+        // ===== 成绩审核与发布 =====
+        function runGradeAudit() {
+          const resultsEl = document.getElementById('gradeAuditResults');
+          const courses = getCourseData();
+          const courseAnomalies = [];
+          const studentAnomalies = [];
+
+          courses.forEach(course => {
+            const gradeDataStr = sessionStorage.getItem(`courseGrades_${course.id}`);
+            if (!gradeDataStr) return;
+            const gradeData = JSON.parse(gradeDataStr || '[]');
+            if (!gradeData.length) return;
+            const totals = gradeData.map(g => g.total || 0);
+            const excellentRate = totals.filter(t => t >= 90).length / totals.length;
+            const passRate = totals.filter(t => t >= 60).length / totals.length;
+            if (excellentRate > 0.3 || passRate < 0.6) {
+              courseAnomalies.push({ courseId: course.id, name: course.name, excellentRate, passRate });
+            }
+            // 学生成绩波动（对比上一门课程若存在）
+            for (let i = 1; i < totals.length; i++) {
+              const diff = Math.abs(totals[i] - totals[i-1]);
+              if (diff > 20) {
+                studentAnomalies.push({ courseId: course.id, studentId: gradeData[i].studentId, diff });
+              }
+            }
+          });
+
+          const renderList = () => {
+            let html = '';
+            if (courseAnomalies.length === 0 && studentAnomalies.length === 0) {
+              html = '<p>未发现异常数据，审核通过。</p>';
+            } else {
+              if (courseAnomalies.length) {
+                html += '<p><strong>课程异常</strong></p><ul>' + courseAnomalies.map(a => `
+                  <li>${a.courseId} ${a.name}：优秀率 ${(a.excellentRate*100).toFixed(1)}%，及格率 ${(a.passRate*100).toFixed(1)}%</li>
+                `).join('') + '</ul>';
+              }
+              if (studentAnomalies.length) {
+                html += '<p><strong>学生成绩波动异常</strong></p><ul>' + studentAnomalies.slice(0,10).map(s => `
+                  <li>课程 ${s.courseId} 学生 ${s.studentId} 波动 ${s.diff} 分</li>
+                `).join('') + '</ul>';
+              }
+            }
+            return html;
+          };
+
+          if (resultsEl) {
+            resultsEl.innerHTML = renderList();
+          }
+          return { courseAnomalies, studentAnomalies };
+        }
+
+        function publishGrades() {
+          const list = getCourseData().map(c => ({ ...c, status: '已发布' }));
+          saveCourseData(list);
+          renderCourses();
+          alert('成绩已发布，学生端可实时查看。');
+        }
+
+        // ===== 班级模拟导入与新增（全链路模拟） =====
+        const mockClassApi = {
+          load() {
+            const cached = JSON.parse(localStorage.getItem('classes') || 'null');
+            return Array.isArray(cached) && cached.length ? cached : [
+              { id: 'CS202301', name: '计算机科学与技术2023-1班', major: '计算机科学与技术', grade: '2023', capacity: 40 },
+              { id: 'CS202302', name: '计算机科学与技术2023-2班', major: '计算机科学与技术', grade: '2023', capacity: 40 },
+              { id: 'SE202301', name: '软件工程2023-1班', major: '软件工程', grade: '2023', capacity: 35 },
+              { id: 'MATH202301', name: '数学与应用数学2023-1班', major: '数学与应用数学', grade: '2023', capacity: 30 }
+            ];
+          },
+          save(list) {
+            localStorage.setItem('classes', JSON.stringify(list));
+            return list;
+          },
+          async add(payload) {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                if (!payload.id || !payload.name || !payload.major || !payload.grade) {
+                  reject(new Error('班级编号、名称、专业、年级为必填'));
+                  return;
+                }
+                if (!/^[-A-Za-z0-9]+$/.test(payload.id)) {
+                  reject(new Error('班级编号仅允许字母、数字、连字符'));
+                  return;
+                }
+                const capacity = Number(payload.capacity || 0);
+                if (Number.isNaN(capacity) || capacity < 1 || capacity > 200) {
+                  reject(new Error('容量需在1-200之间'));
+                  return;
+                }
+                const list = this.load();
+                if (list.find(c => c.id === payload.id)) {
+                  reject(new Error('班级编号已存在'));
+                  return;
+                }
+                const newClass = {
+                  id: payload.id,
+                  name: payload.name,
+                  major: payload.major,
+                  grade: payload.grade,
+                  capacity,
+                  headTeacher: payload.headTeacher || '未指定',
+                  createTime: new Date().toISOString().split('T')[0]
+                };
+                list.push(newClass);
+                this.save(list);
+                resolve({ data: newClass });
+              }, 150);
+            });
+          },
+          importBatch(batch) {
+            const list = this.load();
+            const errors = [];
+            batch.forEach((item, idx) => {
+              if (!item.id || !item.name || !item.major || !item.grade) {
+                errors.push({ row: idx + 1, error: '缺少必填字段' });
+                return;
+              }
+              if (list.find(c => c.id === item.id)) return; // 忽略已存在
+              list.push({
+                id: item.id,
+                name: item.name,
+                major: item.major,
+                grade: item.grade,
+                capacity: item.capacity || 40,
+                headTeacher: item.headTeacher || '未指定',
+                createTime: item.createTime || new Date().toISOString().split('T')[0]
+              });
+            });
+            this.save(list);
+            return { total: batch.length, success: batch.length - errors.length, errors };
+          },
+          assignStudents(assignments) {
+            const result = { success: 0, failed: [] };
+            const students = window.StudentsModule ? StudentsModule.getAllStudents() : [];
+            assignments.forEach(a => {
+              const stu = students.find(s => s.id === a.studentId);
+              if (stu) {
+                stu.classId = a.classId;
+                result.success += 1;
+              } else {
+                result.failed.push({ studentId: a.studentId, error: '学生不存在' });
+              }
+            });
+            return result;
+          }
+        };
+
+        const demoImportClasses = [
+          { id: 'CS202401', name: '计算机科学与技术2024-1班', major: '计算机科学与技术', grade: '2024', capacity: 38, headTeacher: '赵老师' },
+          { id: 'CS202402', name: '计算机科学与技术2024-2班', major: '计算机科学与技术', grade: '2024', capacity: 40, headTeacher: '钱老师' },
+          { id: 'MATH202401', name: '数学与应用数学2024-1班', major: '数学与应用数学', grade: '2024', capacity: 32, headTeacher: '孙老师' }
+        ];
+
+        const demoAssignments = [
+          { studentId: '2024001', classId: 'CS202401' },
+          { studentId: '2024002', classId: 'CS202401' },
+          { studentId: '2024003', classId: 'CS202402' },
+          { studentId: '2024004', classId: 'CS202402' },
+          { studentId: '2021006', classId: 'MATH202401' }
+        ];
+
+        function renderClassListMock() {
+          const tbody = document.getElementById('classList');
+          if (!tbody) return;
+          const classes = mockClassApi.load();
+          const students = window.StudentsModule ? StudentsModule.getAllStudents() : [];
+          tbody.innerHTML = classes.map(cls => {
+            const studentCount = students.filter(s => s.classId === cls.id).length;
+            return `
+              <tr>
+                <td class="checkbox-cell"><input type="checkbox" class="class-checkbox" data-class-id="${cls.id}"></td>
+                <td>${cls.id}</td>
+                <td>${cls.name}</td>
+                <td>${cls.major}</td>
+                <td>${cls.grade}级</td>
+                <td>${studentCount}</td>
+                <td>${cls.capacity}</td>
+                <td>
+                  <button class="btn btn-sm btn-primary" onclick="TeachingAdminModule?.editClass ? TeachingAdminModule.editClass('${cls.id}') : null">编辑</button>
+                  <button class="btn btn-sm btn-info" onclick="TeachingAdminModule?.viewStudents ? TeachingAdminModule.viewStudents('${cls.id}') : null">查看学生</button>
+                </td>
+              </tr>`;
+          }).join('');
+        }
+
+        function updateClassStatsMock() {
+          const classes = mockClassApi.load();
+          const students = window.StudentsModule ? StudentsModule.getAllStudents() : [];
+          const totalClasses = classes.length;
+          const totalStudents = students.length;
+          const avgClassSize = totalClasses ? Math.round(totalStudents / totalClasses) : 0;
+          let totalCapacity = 0;
+          let totalOccupied = 0;
+          classes.forEach(cls => {
+            totalCapacity += Number(cls.capacity || 0);
+            totalOccupied += students.filter(s => s.classId === cls.id).length;
+          });
+          const availableSeats = totalCapacity - totalOccupied;
+          const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+          setText('totalClasses', totalClasses);
+          setText('totalStudents', totalStudents);
+          setText('avgClassSize', avgClassSize);
+          setText('availableSeats', availableSeats);
+        }
+
+        function handleAddClassSubmit(e) {
+          if (e) { e.preventDefault(); e.stopImmediatePropagation(); }
+          const payload = {
+            id: document.getElementById('classId')?.value.trim(),
+            name: document.getElementById('className')?.value.trim(),
+            major: document.getElementById('classMajor')?.value.trim(),
+            grade: document.getElementById('classGrade')?.value,
+            capacity: Number(document.getElementById('classCapacity')?.value || 0),
+            headTeacher: '未指定'
+          };
+          mockClassApi.add(payload)
+            .then(() => {
+              renderClassListMock();
+              updateClassStatsMock();
+              alert('班级添加成功（已模拟存储到本地数据库）');
+            })
+            .catch(err => alert(err.message));
+        }
+
+        function handleMockImport(e) {
+          if (e) { e.preventDefault(); e.stopImmediatePropagation(); }
+          const importResult = mockClassApi.importBatch(demoImportClasses);
+          const assignResult = mockClassApi.assignStudents(demoAssignments);
+          renderClassListMock();
+          updateClassStatsMock();
+          alert(`模拟导入完成：新增/合并 ${importResult.success} 条，分班成功 ${assignResult.success} 条${assignResult.failed.length ? `，失败 ${assignResult.failed.length} 条` : ''}`);
+        }
+
+        function bindClassMockActions() {
+          const addBtn = document.getElementById('addClassBtn');
+          if (addBtn) addBtn.addEventListener('click', handleAddClassSubmit, true);
+          const importBtn = document.getElementById('importBtn');
+          if (importBtn) importBtn.addEventListener('click', handleMockImport, true);
+        }
+
+        // ===== 导航绑定 =====
+        function bindNav() {
+
+          const navLinks = document.querySelectorAll('.sidebar .nav-link[data-section]');
+
+          const setActive = (link) => {
+            navLinks.forEach(l => {
+              l.classList.remove('active');
+              l.parentElement?.classList.remove('active');
+            });
+            link.classList.add('active');
+            link.parentElement?.classList.add('active');
+          };
+
+          navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+              e.preventDefault();
+              setActive(link);
+              showRootSection(link.dataset.section);
+            });
+          });
+
+          const initial = Array.from(navLinks).find(l => l.classList.contains('active')) || navLinks[0];
+          if (initial) {
+            setActive(initial);
+            showRootSection(initial.dataset.section);
+          }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+          bindNav();
+          bindClassMockActions();
+          renderClassListMock();
+          updateClassStatsMock();
+          renderStudents();
+          renderCourses();
+          renderTeachers();
+          bindStudentEvents();
+          bindCourseEvents();
+          bindTeacherEvents();
+          const auditBtn = document.getElementById('runGradeAuditBtn');
+          const publishBtn = document.getElementById('publishGradesBtn');
+          auditBtn && auditBtn.addEventListener('click', runGradeAudit);
+          publishBtn && publishBtn.addEventListener('click', publishGrades);
+        });
+      })();
+
+    </script>
+</body>
+</html>

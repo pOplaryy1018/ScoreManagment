@@ -51,13 +51,18 @@
     .logo-icon {
       width: 42px;
       height: 42px;
-      background: white;
-      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
     }
+
+    .logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+
 
     .logo-text h1 {
       font-size: 22px;
@@ -384,6 +389,37 @@
       .courses-grid {
         grid-template-columns: 1fr;
       }
+
+      .header-content {
+        height: 60px;
+      }
+
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .courses-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+
+      .search-input {
+        width: 160px;
+      }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1280px) {
+      .courses-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+    }
+
+    @media (min-width: 1281px) {
+      .courses-grid {
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      }
     }
   </style>
 </head>
@@ -393,7 +429,9 @@
   <header class="header">
     <div class="header-content">
       <div class="logo-section">
-        <div class="logo-icon">📚</div>
+        <div class="logo-icon">
+          <img src="../public/images/icons/favicon.png" alt="成绩管理系统" class="logo-img">
+        </div>
         <div class="logo-text">
           <h1>成绩管理教学平台</h1>
           <p>课程信息查询系统</p>

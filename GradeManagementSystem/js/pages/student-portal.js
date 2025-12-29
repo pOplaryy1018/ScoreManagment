@@ -1,36 +1,36 @@
 // 学生端页面功能切换逻辑
-document.addEventListener('DOMContentLoaded', function() {
-        // 权限校验
-        if (window.Auth && typeof Auth.enforcePageAccess === 'function') {
-            if (!Auth.enforcePageAccess(['student'])) {
-                return;
-            }
+document.addEventListener('DOMContentLoaded', function () {
+    // 权限校验
+    if (window.Auth && typeof Auth.enforcePageAccess === 'function') {
+        if (!Auth.enforcePageAccess(['student'])) {
+            return;
         }
+    }
 
-        // 功能配置
-        const functions = {
-            'course-selection': {
+    // 功能配置
+    const functions = {
+        'course-selection': {
 
-                title: '选课管理',
-                description: '您可以在这里进行课程选择和退选操作'
-            },
-            'my-courses': {
-                title: '我的课程',
-                description: '您可以在这里查看各学期的课程信息'
-            },
-            'grade-query': {
-                title: '成绩查询',
-                description: '您可以在这里查询各学期的课程成绩'
-            },
-            'todo': {
-                title: '待办事项',
-                description: '您可以在这里管理和跟踪您的学习任务'
-            },
-            'profile': {
-                title: '个人中心',
-                description: '您可以在这里查看和管理您的个人信息'
-            }
-        };
+            title: '选课管理',
+            description: '您可以在这里进行课程选择和退选操作'
+        },
+        'my-courses': {
+            title: '我的课程',
+            description: '您可以在这里查看各学期的课程信息'
+        },
+        'grade-query': {
+            title: '成绩查询',
+            description: '您可以在这里查询各学期的课程成绩'
+        },
+        'todo': {
+            title: '待办事项',
+            description: '您可以在这里管理和跟踪您的学习任务'
+        },
+        'profile': {
+            title: '个人中心',
+            description: '您可以在这里查看和管理您的个人信息'
+        }
+    };
 
     // 课程数据状态管理 - 现在从独立文件导入
     let courseData = {
@@ -51,12 +51,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 旧版示例成绩（作为回退数据，用于已修课程展示）
     const legacyMockGrades = [
-        { 
-            courseName: '程序设计基础', 
-            courseCode: 'CS102', 
-            credit: 3, 
-            grade: 85, 
-            semester: '2023-2024-1', 
+        {
+            courseName: '程序设计基础',
+            courseCode: 'CS102',
+            credit: 3,
+            grade: 85,
+            semester: '2023-2024-1',
             teacher: '陈教授',
             publishStatus: 'published',
             auditStatus: 'approved',
@@ -65,12 +65,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 finalScore: { percentage: 0.7, score: 83 }
             }
         },
-        { 
-            courseName: '高等数学', 
-            courseCode: 'MATH101', 
-            credit: 5, 
-            grade: 92, 
-            semester: '2023-2024-1', 
+        {
+            courseName: '高等数学',
+            courseCode: 'MATH101',
+            credit: 5,
+            grade: 92,
+            semester: '2023-2024-1',
             teacher: '刘教授',
             publishStatus: 'published',
             auditStatus: 'approved',
@@ -79,12 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 finalScore: { percentage: 0.6, score: 90 }
             }
         },
-        { 
-            courseName: '大学英语', 
-            courseCode: 'ENG101', 
-            credit: 2, 
-            grade: 78, 
-            semester: '2023-2024-2', 
+        {
+            courseName: '大学英语',
+            courseCode: 'ENG101',
+            credit: 2,
+            grade: 78,
+            semester: '2023-2024-2',
             teacher: '刘教授',
             publishStatus: 'published',
             auditStatus: 'approved',
@@ -130,10 +130,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 学生活动管理（若未注入则提供兜底实现）
     const studentManager = window.studentManager || {
-        recordCourseSelection: () => {},
-        recordCourseDrop: () => {},
-        recordGradeQuery: () => {},
-        recordTodoCompletion: () => {},
+        recordCourseSelection: () => { },
+        recordCourseDrop: () => { },
+        recordGradeQuery: () => { },
+        recordTodoCompletion: () => { },
         getStudentInfo: () => currentStudentInfo ? {
             name: currentStudentName,
             studentId: currentStudentId,
@@ -172,21 +172,21 @@ document.addEventListener('DOMContentLoaded', function() {
     function initPage() {
         // 初始化学生信息
         initStudentInfo();
-        
+
         // 初始化课程数据
         initCourseData();
-        
+
         // 绑定登出按钮事件
         if (logoutBtn) {
             logoutBtn.addEventListener('click', handleLogout);
         }
-        
+
         // 默认激活选课管理功能
         switchFunction('course-selection');
-        
+
         // 添加导航项点击事件监听
         navItems.forEach(item => {
-            item.addEventListener('click', function(e) {
+            item.addEventListener('click', function (e) {
                 e.preventDefault();
                 const functionName = this.getAttribute('data-function');
                 switchFunction(functionName);
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    
+
     // 切换功能
     function switchFunction(functionName) {
         // 移除所有导航项的active类
@@ -316,28 +316,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化选课管理功能
     function initCourseSelection() {
         console.log('初始化选课管理功能');
-        
+
         // 同步我的课程数据到已选课程（当前学期的课程）
         syncMyCoursesToSelectedCourses();
-        
+
         // 渲染可选课程列表
         renderAvailableCourses(courseData.availableCourses);
-        
+
         // 渲染已选课程列表
         renderSelectedCourses(courseData.selectedCourses);
     }
-    
+
     // 同步我的课程数据到已选课程
     function syncMyCoursesToSelectedCourses() {
         // 同步当前学期的已选课程到我的课程历史中
         const currentSemester = '2024-2025-1';
-        
+
         // 获取当前学期已选课程
         const currentSelectedCourses = courseData.selectedCourses;
-        
+
         // 更新我的课程历史：移除当前学期的旧数据，添加新数据
         myCoursesData = myCoursesData.filter(course => course.semester !== currentSemester);
-        
+
         // 添加当前学期的已选课程到我的课程历史
         currentSelectedCourses.forEach(course => {
             if (!myCoursesData.some(existing => existing.id === course.id && existing.semester === currentSemester)) {
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
-        
+
         console.log('课程数据同步已完成');
     }
 
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderAvailableCourses(courses) {
         const container = document.getElementById('availableCourses');
         if (!container) return;
-        
+
         if (courses.length === 0) {
             container.innerHTML = '<div class="no-data">暂无可选课程</div>';
             return;
@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }).join('');
 
-        
+
         container.innerHTML = coursesHTML;
     }
 
@@ -392,12 +392,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderSelectedCourses(courses) {
         const container = document.getElementById('selectedCourses');
         if (!container) return;
-        
+
         if (courses.length === 0) {
             container.innerHTML = '<div class="no-data">暂无已选课程，请先在“选课管理”中选择课程</div>';
             return;
         }
-        
+
         const coursesHTML = courses.map(course => `
             <div class="course-card">
                 <h5>${course.name}</h5>
@@ -408,7 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button class="btn btn-danger" onclick="dropCourse('${course.id}')">退选课程</button>
             </div>
         `).join('');
-        
+
         container.innerHTML = coursesHTML;
     }
 
@@ -416,14 +416,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化我的课程功能
     function initMyCourses() {
         console.log('初始化我的课程功能');
-        
+
         const queryBtn = document.getElementById('myCoursesQueryBtn');
         if (queryBtn) {
-            queryBtn.addEventListener('click', function() {
+            queryBtn.addEventListener('click', function () {
                 queryMyCourses();
             });
         }
-        
+
         // 默认显示所有课程
         queryMyCourses();
     }
@@ -432,14 +432,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function queryMyCourses() {
         const semesterSelect = document.getElementById('myCoursesSemesterSelect');
         const semester = semesterSelect ? semesterSelect.value : '';
-        
+
         console.log(`查询我的课程，学期：${semester}`);
-        
+
         // 过滤数据（如果选择了特定学期）
-        const filteredData = semester ? 
-            myCoursesData.filter(item => item.semester === semester) : 
+        const filteredData = semester ?
+            myCoursesData.filter(item => item.semester === semester) :
             myCoursesData;
-        
+
         // 渲染我的课程列表
         renderMyCourses(filteredData);
     }
@@ -448,16 +448,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderMyCourses(courses) {
         const container = document.getElementById('myCoursesList');
         if (!container) return;
-        
+
         if (courses.length === 0) {
             container.innerHTML = '<div class="no-data">该学期暂无课程数据</div>';
             return;
         }
-        
+
         const coursesHTML = courses.map(course => {
             const statusClass = course.status === '已修完' ? 'status-completed' : 'status-in-progress';
             const gradeText = course.grade ? `<span class="grade">${course.grade}分</span>` : '暂无成绩';
-            
+
             return `
                 <div class="course-card">
                     <span class="status-badge ${statusClass}">${course.status}</span>
@@ -470,21 +470,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }).join('');
-        
+
         container.innerHTML = coursesHTML;
     }
 
     // 初始化成绩查询功能
     function initGradeQuery() {
         console.log('初始化成绩查询功能');
-        
+
         const queryBtn = document.getElementById('queryBtn');
         if (queryBtn) {
-            queryBtn.addEventListener('click', function() {
+            queryBtn.addEventListener('click', function () {
                 queryGrades();
             });
         }
-        
+
         // 默认显示所有成绩
         queryGrades();
     }
@@ -493,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function queryGrades() {
         const semesterSelect = document.getElementById('semesterSelect');
         const semester = semesterSelect ? semesterSelect.value : '';
-        
+
         console.log(`查询成绩，学期：${semester}`);
 
         // 获取成绩源（优先使用成绩模块，回退到旧版示例数据）
@@ -545,25 +545,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 gradeDetails: details
             }];
         });
-        
+
         // 过滤数据（如果选择了特定学期）
-        const filteredData = semester ? 
-            courseGrades.filter(item => item.semester === semester) : 
+        const filteredData = semester ?
+            courseGrades.filter(item => item.semester === semester) :
             courseGrades;
 
-        
+
         // 记录成绩查询活动（记录第一个查询的课程）
         if (filteredData.length > 0) {
             const firstCourse = filteredData[0];
             studentManager.recordGradeQuery(currentStudentId, firstCourse.courseCode, firstCourse.courseName, firstCourse.grade);
         }
-        
+
         // 如果当前在"个人中心"页面，更新活动记录
         const activeNavItem = document.querySelector('.nav-item.active');
         if (activeNavItem && activeNavItem.getAttribute('data-function') === 'profile') {
             updateRecentActivities();
         }
-        
+
         // 渲染成绩表格
         renderGradeTable(filteredData);
     }
@@ -579,18 +579,18 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderGradeTable(grades) {
         const tableBody = document.querySelector('#gradeTable tbody');
         if (!tableBody) return;
-        
+
         if (grades.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="6" class="no-data">未查询到当前学生的成绩记录</td></tr>';
             return;
         }
-        
+
         const rowsHTML = grades.map(grade => {
             const details = grade.gradeDetails || { regularScore: { percentage: 0, score: 0 }, finalScore: { percentage: 0, score: 0 } };
             const regularPercentage = Math.round(details.regularScore.percentage * 100);
             const finalPercentage = Math.round(details.finalScore.percentage * 100);
             const statusInfo = getGradeStatusInfo(grade);
-            
+
             return `
             <tr>
                 <td>${grade.courseName}</td>
@@ -641,17 +641,17 @@ document.addEventListener('DOMContentLoaded', function() {
             </tr>
             `;
         }).join('');
-        
+
         tableBody.innerHTML = rowsHTML;
     }
 
-    
+
     // 切换成绩详情显示/隐藏
     function toggleGradeDetails(button) {
         const row = button.closest('tr');
         const detailsRow = row.nextElementSibling;
         const isVisible = detailsRow.style.display === 'table-row';
-        
+
         if (isVisible) {
             detailsRow.style.display = 'none';
             button.textContent = '▼';
@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.textContent = '▲';
         }
     }
-    
+
     // 全局函数（用于HTML按钮调用）
     window.toggleGradeDetails = toggleGradeDetails;
 
@@ -737,7 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!confirm('确定要退选该课程吗？')) {
             return;
         }
-        
+
         try {
             const course = courseManager.getCourseById(courseId) || coursesData.find(c => c.id === courseId);
             if (!course) throw new Error('课程不存在');
@@ -792,19 +792,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTodoCourseSelector() {
         const courseSelect = document.getElementById('todoCourseSelect');
         if (!courseSelect) return;
-        
+
         // 获取当前学期正在修读的课程（从我的课程历史中获取）
         const currentSemester = '2024-2025-1';
-        const currentCourses = myCoursesData.filter(course => 
+        const currentCourses = myCoursesData.filter(course =>
             course.semester === currentSemester && course.status === '正在修读'
         );
-        
+
         // 保存当前选中的值
         const currentValue = courseSelect.value;
-        
+
         // 清空现有选项（保留"全部课程"选项）
         courseSelect.innerHTML = '<option value="">全部课程</option>';
-        
+
         // 添加当前学期正在修读的课程选项
         currentCourses.forEach(course => {
             const option = document.createElement('option');
@@ -812,7 +812,7 @@ document.addEventListener('DOMContentLoaded', function() {
             option.textContent = course.name;
             courseSelect.appendChild(option);
         });
-        
+
         // 恢复之前选中的值（如果还存在）
         if (currentValue && courseSelect.querySelector(`option[value="${currentValue}"]`)) {
             courseSelect.value = currentValue;
@@ -842,20 +842,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化待办事项功能
     function initTodo() {
         console.log('初始化待办事项功能');
-        
+
         const queryBtn = document.getElementById('todoQueryBtn');
         if (queryBtn) {
-            queryBtn.addEventListener('click', function() {
+            queryBtn.addEventListener('click', function () {
                 queryTodo();
             });
         }
-        
+
         // 更新课程选择器
         updateTodoCourseSelector();
 
         // 绑定上传校验（仅允许PDF/DOCX）
         bindUploadValidation();
-        
+
         // 默认显示所有待办事项
         queryTodo();
     }
@@ -864,13 +864,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化个人中心功能
     function initProfile() {
         console.log('初始化个人中心功能');
-        
+
         // 更新个人信息
         updateProfileInfo();
-        
+
         // 更新学习统计
         updateLearningStats();
-        
+
         // 更新最近活动
         updateRecentActivities();
     }
@@ -879,25 +879,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateProfileInfo() {
         const currentStudent = studentManager.getStudentInfo(currentStudentId);
 
-        
+
         if (!currentStudent) {
             console.error('学生信息不存在');
             return;
         }
-        
+
         // 更新基本信息
         document.getElementById('profileName').textContent = currentStudent.name;
         document.getElementById('profileStudentId').textContent = currentStudent.studentId;
         document.getElementById('profileDepartment').textContent = currentStudent.department;
         document.getElementById('profileGrade').textContent = currentStudent.grade;
-        
+
         // 更新详细联系信息（如果存在对应的元素）
         const profileEmail = document.getElementById('profileEmail');
         const profilePhone = document.getElementById('profilePhone');
         const profileMajor = document.getElementById('profileMajor');
         const profileClass = document.getElementById('profileClass');
         const profileAdmissionDate = document.getElementById('profileAdmissionDate');
-        
+
         if (profileEmail) profileEmail.textContent = currentStudent.email || '未设置';
         if (profilePhone) profilePhone.textContent = currentStudent.phone || '未设置';
         if (profileMajor) profileMajor.textContent = currentStudent.major || '未设置';
@@ -911,29 +911,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const completedCourses = myCoursesData.filter(course => course.status === '已修完');
         const currentCourses = myCoursesData.filter(course => course.status === '正在修读');
         const totalCourses = completedCourses.length + currentCourses.length;
-        
+
         const totalCredits = myCoursesData.reduce((sum, course) => sum + course.credit, 0);
         const completedCredits = completedCourses.reduce((sum, course) => sum + course.credit, 0);
         const currentCredits = currentCourses.reduce((sum, course) => sum + course.credit, 0);
-        
+
         const completedWithGrade = completedCourses.filter(course => course.grade);
-        const avgGrade = completedWithGrade.length > 0 ? 
-            Math.round(completedWithGrade.reduce((sum, course) => sum + course.grade, 0) / completedWithGrade.length) : 
+        const avgGrade = completedWithGrade.length > 0 ?
+            Math.round(completedWithGrade.reduce((sum, course) => sum + course.grade, 0) / completedWithGrade.length) :
             0;
-        
+
         // 计算学习进度
         const totalTodoItems = myCoursesData.reduce((sum, course) => sum + (course.todoItems ? course.todoItems.length : 0), 0);
-        const completedTodoItems = myCoursesData.reduce((sum, course) => 
+        const completedTodoItems = myCoursesData.reduce((sum, course) =>
             sum + (course.todoItems ? course.todoItems.filter(item => item.completed).length : 0), 0
         );
         const todoCompletionRate = totalTodoItems > 0 ? Math.round((completedTodoItems / totalTodoItems) * 100) : 0;
-        
+
         // 更新统计信息
         document.getElementById('totalCourses').textContent = totalCourses;
         document.getElementById('currentCourses').textContent = currentCourses.length;
         document.getElementById('totalCredits').textContent = totalCredits;
         document.getElementById('avgGrade').textContent = avgGrade;
-        
+
         // 更新详细统计信息（如果存在对应的元素）
         const completedCreditsElem = document.getElementById('completedCredits');
         const currentCreditsElem = document.getElementById('currentCredits');
@@ -942,7 +942,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const completedTodoItemsElem = document.getElementById('completedTodoItems');
         const gradedCoursesElem = document.getElementById('gradedCourses');
         const completedCoursesElem = document.getElementById('completedCourses');
-        
+
         if (completedCreditsElem) completedCreditsElem.textContent = completedCredits;
         if (currentCreditsElem) currentCreditsElem.textContent = currentCredits;
         if (todoCompletionRateElem) todoCompletionRateElem.textContent = `${todoCompletionRate}%`;
@@ -951,25 +951,25 @@ document.addEventListener('DOMContentLoaded', function() {
         if (gradedCoursesElem) gradedCoursesElem.textContent = completedWithGrade.length;
         if (completedCoursesElem) completedCoursesElem.textContent = completedCourses.length;
     }
-    
+
     // 更新最近活动
     function updateRecentActivities() {
         const activitiesContainer = document.querySelector('.recent-activities');
         if (!activitiesContainer) return;
-        
+
         // 获取最近的活动记录
         const recentActivities = studentManager.getRecentActivities(currentStudentId, 10);
 
-        
+
         if (recentActivities.length === 0) {
             activitiesContainer.innerHTML = '<div class="no-data">暂无活动记录</div>';
             return;
         }
-        
+
         const activitiesHTML = recentActivities.map(activity => {
             // 根据活动类型设置图标
             let icon = '📚';
-            switch(activity.type) {
+            switch (activity.type) {
                 case 'course_selection':
                     icon = '📚';
                     break;
@@ -985,10 +985,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 default:
                     icon = '📝';
             }
-            
+
             // 格式化时间显示
             const timeStr = activity.timestamp.substring(0, 10);
-            
+
             return `
                 <div class="activity-item">
                     <span class="activity-icon">${icon}</span>
@@ -1000,113 +1000,188 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         }).join('');
-        
+
         activitiesContainer.innerHTML = activitiesHTML;
     }
 
     // 获取当前学期正在修读的课程（包含待办事项）
     function getCurrentSemesterCourses() {
         const currentSemester = '2024-2025-1'; // 当前学期
-        return myCoursesData.filter(course => 
+        return myCoursesData.filter(course =>
             course.semester === currentSemester && course.status === '正在修读'
         );
+    }
+
+    // 获取教师发布的作业和考试（从localStorage读取）
+    function getTeacherPublishedAssignments() {
+        const assignments = Utils.storage.get('assignments', []);
+
+        // 转换为学生端待办事项格式
+        return assignments.map(item => {
+            // 格式化截止日期
+            let dueDateFormatted = '';
+            if (item.deadline) {
+                const deadlineDate = new Date(item.deadline);
+                dueDateFormatted = deadlineDate.toISOString().split('T')[0];
+            }
+
+            return {
+                id: item.id,
+                type: item.type === 'exam' ? '考试' : '作业',
+                title: item.title,
+                description: item.description || '暂无详细说明',
+                dueDate: dueDateFormatted,
+                completed: false,
+                source: 'teacher',
+                totalScore: item.totalScore || 100,
+                createdAt: item.createdAt
+            };
+        });
     }
 
     // 查询待办事项
     function queryTodo() {
         const courseSelect = document.getElementById('todoCourseSelect');
         const courseId = courseSelect ? courseSelect.value : '';
-        
+
         console.log(`查询待办事项，课程：${courseId}`);
-        
+
         // 获取当前学期的课程数据（从我的课程历史中获取当前学期的课程）
         const currentSemester = '2024-2025-1';
-        const currentCourses = myCoursesData.filter(course => 
+        const currentCourses = myCoursesData.filter(course =>
             course.semester === currentSemester && course.status === '正在修读'
         );
 
-        // 未选课引导
-        if (currentCourses.length === 0) {
+        // 获取教师发布的作业和考试
+        const teacherAssignments = getTeacherPublishedAssignments();
+        console.log('教师发布的作业/考试数量:', teacherAssignments.length);
+
+        // 未选课且无教师发布的作业
+        if (currentCourses.length === 0 && teacherAssignments.length === 0) {
             const container = document.getElementById('todoList');
             if (container) container.innerHTML = '<div class="no-data">您还未选择课程，请先在“选课管理”中选课</div>';
             return;
         }
-        
+
         // 过滤数据（如果选择了特定课程）
-        const filteredData = courseId ? 
-            currentCourses.filter(course => course.id === courseId) : 
+        const filteredData = courseId ?
+            currentCourses.filter(course => course.id === courseId) :
             currentCourses;
-        
-        // 渲染待办事项列表
-        renderTodoList(filteredData);
+
+        // 渲染待办事项列表（传入教师发布的作业）
+        renderTodoList(filteredData, teacherAssignments);
     }
 
 
     // 渲染待办事项列表
-    function renderTodoList(courses) {
+    function renderTodoList(courses, teacherAssignments = []) {
         const container = document.getElementById('todoList');
         if (!container) return;
-        
-        if (courses.length === 0) {
-            container.innerHTML = '<div class="no-data">该课程暂无待办事项</div>';
-            return;
-        }
-        
-        const todoHTML = courses.map(course => {
-            if (!course.todoItems || course.todoItems.length === 0) {
-                return `
-                    <div class="course-todo-section">
-                        <h4 class="course-todo-title">${course.name}</h4>
-                        <div class="no-data">该课程暂无待办事项</div>
-                    </div>
-                `;
-            }
-            
-            const courseTodosHTML = course.todoItems.map(item => {
+
+        // 渲染课程待办事项
+        let todoHTML = '';
+
+        // 先渲染教师发布的作业和考试
+        if (teacherAssignments.length > 0) {
+            const teacherTodosHTML = teacherAssignments.map(item => {
                 const completedClass = item.completed ? 'completed' : '';
                 const dueDateText = item.dueDate ? `截止日期：${item.dueDate}` : '';
                 const statusText = item.completed ? '已完成' : '未完成';
                 const statusClass = item.completed ? 'status-completed' : 'status-pending';
-                const submissionStatus = item.submissionStatus || (item.completed ? '已提交' : '未提交');
-                const submissionClass = submissionStatus === '已批改' ? 'status-completed' : (submissionStatus === '已提交' ? 'status-submitted' : 'status-pending');
-                
+                const typeClass = item.type === '考试' ? 'type-exam' : 'type-homework';
+                const scoreText = item.totalScore ? `（满分${item.totalScore}分）` : '';
+
                 return `
-                    <div class="todo-card ${completedClass}" data-course-id="${course.id}" data-todo-id="${item.id}">
+                    <div class="todo-card ${completedClass}" data-assignment-id="${item.id}">
                         <div class="todo-card-header">
-                            <span class="todo-type ${item.type === '课件' ? 'type-lesson' : 'type-homework'}">${item.type}</span>
+                            <span class="todo-type ${typeClass}">${item.type}</span>
                             <span class="todo-status ${statusClass}">${statusText}</span>
-                            <span class="todo-status ${submissionClass}">${submissionStatus}</span>
                         </div>
                         <div class="todo-card-body">
-                            <h5 class="todo-title">${item.title}</h5>
+                            <h5 class="todo-title">${item.title}${scoreText}</h5>
                             <p class="todo-description">${item.description}</p>
                             <div class="todo-meta">
-                                <span class="todo-course">${course.name}</span>
+                                <span class="todo-source">📢 教师发布</span>
                                 <span class="todo-due-date">${dueDateText}</span>
                             </div>
-                        </div>
-                        <div class="todo-card-actions">
-                            <button class="todo-complete-btn ${item.completed ? 'completed' : ''}" 
-                                    onclick="toggleTodoCompletion('${course.id}', ${item.id})">
-                                ${item.completed ? '✓ 已完成' : '标记完成'}
-                            </button>
                         </div>
                     </div>
                 `;
             }).join('');
 
-            
-            return `
-                <div class="course-todo-section">
-                    <h4 class="course-todo-title">${course.name}</h4>
+            todoHTML += `
+                <div class="course-todo-section teacher-announcements">
+                    <h4 class="course-todo-title">📋 教师发布的作业与考试</h4>
                     <div class="todo-cards-grid">
-                        ${courseTodosHTML}
+                        ${teacherTodosHTML}
                     </div>
                 </div>
             `;
-        }).join('');
-        
-        container.innerHTML = todoHTML;
+        }
+
+        // 再渲染课程静态待办事项
+        if (courses.length > 0) {
+            const courseTodoHTML = courses.map(course => {
+                if (!course.todoItems || course.todoItems.length === 0) {
+                    return `
+                        <div class="course-todo-section">
+                            <h4 class="course-todo-title">${course.name}</h4>
+                            <div class="no-data">该课程暂无待办事项</div>
+                        </div>
+                    `;
+                }
+
+                const courseTodosHTML = course.todoItems.map(item => {
+                    const completedClass = item.completed ? 'completed' : '';
+                    const dueDateText = item.dueDate ? `截止日期：${item.dueDate}` : '';
+                    const statusText = item.completed ? '已完成' : '未完成';
+                    const statusClass = item.completed ? 'status-completed' : 'status-pending';
+                    const submissionStatus = item.submissionStatus || (item.completed ? '已提交' : '未提交');
+                    const submissionClass = submissionStatus === '已批改' ? 'status-completed' : (submissionStatus === '已提交' ? 'status-submitted' : 'status-pending');
+
+                    return `
+                        <div class="todo-card ${completedClass}" data-course-id="${course.id}" data-todo-id="${item.id}">
+                            <div class="todo-card-header">
+                                <span class="todo-type ${item.type === '课件' ? 'type-lesson' : 'type-homework'}">${item.type}</span>
+                                <span class="todo-status ${statusClass}">${statusText}</span>
+                                <span class="todo-status ${submissionClass}">${submissionStatus}</span>
+                            </div>
+                            <div class="todo-card-body">
+                                <h5 class="todo-title">${item.title}</h5>
+                                <p class="todo-description">${item.description}</p>
+                                <div class="todo-meta">
+                                    <span class="todo-course">${course.name}</span>
+                                    <span class="todo-due-date">${dueDateText}</span>
+                                </div>
+                            </div>
+                            <div class="todo-card-actions">
+                                <button class="todo-complete-btn ${item.completed ? 'completed' : ''}" 
+                                        onclick="toggleTodoCompletion('${course.id}', ${item.id})">
+                                    ${item.completed ? '✓ 已完成' : '标记完成'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="course-todo-section">
+                        <h4 class="course-todo-title">${course.name}</h4>
+                        <div class="todo-cards-grid">
+                            ${courseTodosHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            todoHTML += courseTodoHTML;
+        }
+
+        if (todoHTML === '') {
+            container.innerHTML = '<div class="no-data">暂无待办事项</div>';
+        } else {
+            container.innerHTML = todoHTML;
+        }
     }
 
     // 切换待办事项完成状态
@@ -1114,28 +1189,28 @@ document.addEventListener('DOMContentLoaded', function() {
         // 找到对应的课程和待办事项
         const course = myCoursesData.find(c => c.id === courseId);
         if (!course || !course.todoItems) return;
-        
+
         const todoItem = course.todoItems.find(item => item.id === todoId);
         if (!todoItem) return;
-        
+
         // 记录操作前的状态
         const wasCompleted = todoItem.completed;
-        
+
         // 切换完成状态
         todoItem.completed = !todoItem.completed;
-        
+
         // 记录活动（只有在标记完成时才记录）
         if (!wasCompleted && todoItem.completed) {
             studentManager.recordTodoCompletion(currentStudentId, courseId, course.name, todoItem.title);
 
         }
-        
+
         // 更新UI
         const todoCard = document.querySelector(`.todo-card[data-course-id="${courseId}"][data-todo-id="${todoId}"]`);
         if (todoCard) {
             const button = todoCard.querySelector('.todo-complete-btn');
             const statusSpan = todoCard.querySelector('.todo-status');
-            
+
             if (todoItem.completed) {
                 todoCard.classList.add('completed');
                 button.textContent = '✓ 已完成';
@@ -1150,13 +1225,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusSpan.className = 'todo-status status-pending';
             }
         }
-        
+
         // 如果当前在"个人中心"页面，更新活动记录
         const activeNavItem = document.querySelector('.nav-item.active');
         if (activeNavItem && activeNavItem.getAttribute('data-function') === 'profile') {
             updateRecentActivities();
         }
-        
+
         console.log(`课程 ${course.name} 的待办事项 ${todoItem.title} 状态已更新为：${todoItem.completed ? '已完成' : '未完成'}`);
     }
 

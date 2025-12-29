@@ -177,11 +177,13 @@
 }
 
 /* 课程选择样式 */
-.course-list, .selected-courses {
+.course-list,
+.selected-courses {
     margin-bottom: var(--space-xl);
 }
 
-.course-list h4, .selected-courses h4 {
+.course-list h4,
+.selected-courses h4 {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: var(--space-md);
@@ -213,12 +215,12 @@
     overflow: hidden;
 }
 
-        .no-data {
-            text-align: center;
-            color: var(--text-secondary);
-            padding: var(--space-xl);
-            font-style: italic;
-        }
+.no-data {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: var(--space-xl);
+    font-style: italic;
+}
 
 /* 待办事项样式 */
 .todo-container {
@@ -300,6 +302,25 @@
 .type-homework {
     background-color: var(--warning-color);
     color: var(--text-primary);
+}
+
+.type-exam {
+    background-color: #dc3545;
+    color: var(--white);
+}
+
+.todo-source {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.teacher-announcements .course-todo-title {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
 }
 
 .todo-status {
@@ -564,36 +585,36 @@
     .todo-cards-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .todo-card {
         padding: var(--space-md);
     }
-    
+
     .todo-card-header {
         flex-direction: column;
         align-items: flex-start;
         gap: var(--space-sm);
     }
-    
+
     .todo-meta {
         flex-direction: column;
         align-items: flex-start;
         gap: var(--space-xs);
     }
-    
+
     .profile-info-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .activity-item {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .activity-icon {
         align-self: center;
     }
@@ -714,4 +735,3 @@
 .table tr:hover {
     background-color: var(--background-color);
 }
-

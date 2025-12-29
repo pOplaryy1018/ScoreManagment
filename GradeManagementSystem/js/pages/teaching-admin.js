@@ -3,7 +3,7 @@
  * 负责班级学生管理、课程安排系统、课程表生成等功能
  */
 
-(function() {
+(function () {
     'use strict';
 
     /**
@@ -30,12 +30,13 @@
         timetableData: {},
         conflictData: [],
         uploadedStudents: [],
-        
+
         init() {
             this.bindEvents();
             this.initClassManagement();
             this.initCourseScheduling();
             this.initTimetableGeneration();
+            this.initOperationLogs();
             this.loadInitialData();
             console.log('教学管理员界面初始化完成');
         },
@@ -44,6 +45,15 @@
             // 教学管理员导航切换
             document.querySelectorAll('.teaching-nav-item').forEach(item => {
                 item.addEventListener('click', (e) => {
+                    const section = e.currentTarget.dataset.section;
+                    this.switchSection(section);
+                });
+            });
+
+            // 侧边栏导航切换
+            document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
                     const section = e.currentTarget.dataset.section;
                     this.switchSection(section);
                 });
@@ -93,7 +103,7 @@
             this.currentSection = sectionId;
 
             // 根据不同section加载相应数据
-            switch(sectionId) {
+            switch (sectionId) {
                 case 'class-management':
                     this.loadClassData();
                     break;
@@ -123,10 +133,10 @@
             // 文件上传区域
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
-            
+
             if (uploadArea && fileInput) {
                 uploadArea.addEventListener('click', () => fileInput.click());
-                
+
                 uploadArea.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     uploadArea.classList.add('dragover');
@@ -211,7 +221,7 @@
             classes.forEach(cls => {
                 const studentCount = students.filter(s => s.classId === cls.id).length;
                 const availableSeats = cls.capacity - studentCount;
-                
+
                 html += `
                     <tr>
                         <td class="checkbox-cell">
@@ -270,7 +280,7 @@
             }
 
             const classes = this.getClasses();
-            
+
             // 检查班级编号是否已存在
             if (classes.find(cls => cls.id === classId)) {
                 alert('班级编号已存在');
@@ -305,14 +315,14 @@
         editClass(classId) {
             const classes = this.getClasses();
             const cls = classes.find(c => c.id === classId);
-            
+
             if (cls) {
                 document.getElementById('classId').value = cls.id;
                 document.getElementById('className').value = cls.name;
                 document.getElementById('classMajor').value = cls.major;
                 document.getElementById('classGrade').value = cls.grade;
                 document.getElementById('classCapacity').value = cls.capacity;
-                
+
                 // 滚动到表单
                 document.querySelector('.management-card').scrollIntoView({ behavior: 'smooth' });
             }
@@ -333,7 +343,7 @@
 
             let classes = this.getClasses();
             const index = classes.findIndex(cls => cls.id === classId);
-            
+
             if (index === -1) {
                 alert('班级不存在');
                 return;
@@ -383,7 +393,7 @@
             const students = StudentsModule.getStudentsByClass(classId);
             const classes = this.getClasses();
             const cls = classes.find(c => c.id === classId);
-            
+
             let studentList = `班级：${cls.name}\n\n学生列表：\n`;
             students.forEach((student, index) => {
                 studentList += `${index + 1}. ${student.id} - ${student.name} (${student.gender})\n`;
@@ -431,7 +441,7 @@
 
             const classes = this.getClasses();
             const targetClass = classes.find(c => c.id === targetClassId);
-            
+
             if (!targetClass) {
                 alert('目标班级不存在');
                 return;
@@ -460,11 +470,11 @@
             const students = StudentsModule.getAllStudents();
 
             let csvContent = "班级编号,班级名称,专业,年级,当前人数,最大容量,剩余名额\n";
-            
+
             classes.forEach(cls => {
                 const studentCount = students.filter(s => s.classId === cls.id).length;
                 const availableSeats = cls.capacity - studentCount;
-                
+
                 csvContent += `${cls.id},${cls.name},${cls.major},${cls.grade}级,${studentCount},${cls.capacity},${availableSeats}\n`;
             });
 
@@ -498,12 +508,12 @@
         parseStudentData(content) {
             const lines = content.split('\n');
             const students = [];
-            
+
             // 跳过标题行
             for (let i = 1; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (!line) continue;
-                
+
                 const parts = line.split(',');
                 if (parts.length >= 4) {
                     students.push({
@@ -527,9 +537,9 @@
             }
 
             const result = StudentsModule.batchImport(this.uploadedStudents);
-            
+
             let message = `导入完成：\n成功：${result.success} 条\n失败：${result.errors.length} 条`;
-            
+
             if (result.errors.length > 0) {
                 message += '\n\n错误详情：\n';
                 result.errors.forEach(error => {
@@ -538,11 +548,11 @@
             }
 
             alert(message);
-            
+
             // 清空上传的数据
             this.uploadedStudents = [];
             document.getElementById('fileInput').value = '';
-            
+
             // 刷新数据
             this.loadClassData();
             this.updateClassStatistics();
@@ -552,20 +562,20 @@
         updateClassStatistics() {
             const classes = this.getClasses();
             const students = StudentsModule.getAllStudents();
-            
+
             const totalClasses = classes.length;
             const totalStudents = students.length;
             const avgClassSize = totalClasses > 0 ? Math.round(totalStudents / totalClasses) : 0;
-            
+
             let totalCapacity = 0;
             let totalOccupied = 0;
-            
+
             classes.forEach(cls => {
                 totalCapacity += cls.capacity;
                 const studentCount = students.filter(s => s.classId === cls.id).length;
                 totalOccupied += studentCount;
             });
-            
+
             const availableSeats = totalCapacity - totalOccupied;
 
             document.getElementById('totalClasses').textContent = totalClasses;
@@ -612,6 +622,11 @@
             document.getElementById(sectionId).classList.add('active');
 
             this.currentSection = sectionId;
+
+            // 切换到操作日志时加载数据
+            if (sectionId === 'operation-logs') {
+                this.loadOperationLogs();
+            }
         },
 
         switchTab(sectionId, tabId) {
@@ -714,11 +729,11 @@
         updateClassSelects() {
             const classes = StorageModule.getClasses() || [];
             const selects = [document.getElementById('targetClassSelect'), document.getElementById('timetableClassSelect')];
-            
+
             selects.forEach(select => {
                 if (!select) return;
                 const currentValue = select.value;
-                select.innerHTML = '<option value="">请选择班级</option>' + 
+                select.innerHTML = '<option value="">请选择班级</option>' +
                     classes.map(cls => `<option value="${cls.id}">${cls.name}</option>`).join('');
                 if (currentValue) select.value = currentValue;
             });
@@ -902,14 +917,14 @@
 
             // 创建CSV内容
             const csvContent = templateData.map(row => row.join(',')).join('\n');
-            
+
             // 创建下载链接
             const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = '学生信息导入模板.csv';
             link.click();
-            
+
             NotificationModule.showSuccess('模板下载成功');
         },
 
@@ -920,7 +935,7 @@
         uploadFile() {
             const fileInput = document.getElementById('studentFileInput');
             const file = fileInput.files[0];
-            
+
             if (!file) {
                 NotificationModule.showError('请先选择文件');
                 return;
@@ -993,9 +1008,9 @@
             ];
 
             let filteredStudents = mockStudents;
-            
+
             if (searchTerm) {
-                filteredStudents = filteredStudents.filter(student => 
+                filteredStudents = filteredStudents.filter(student =>
                     student.id.includes(searchTerm) || student.name.includes(searchTerm)
                 );
             }
@@ -1030,7 +1045,7 @@
             } else {
                 this.selectedStudents.add(studentId);
             }
-            
+
             this.updateSelectedStudentsList();
             this.searchStudents(); // 重新渲染列表以更新选中状态
         },
@@ -1038,13 +1053,13 @@
         updateSelectedStudentsList() {
             const container = document.getElementById('selectedStudentsList');
             const count = document.getElementById('selectedCount');
-            
+
             if (count) {
                 count.textContent = this.selectedStudents.size;
             }
-            
+
             if (!container) return;
-            
+
             if (this.selectedStudents.size === 0) {
                 container.innerHTML = '<p style="color: #6c757d; text-align: center;">暂未选择学生</p>';
                 return;
@@ -1073,7 +1088,7 @@
 
         assignToClass() {
             const targetClass = document.getElementById('targetClassSelect').value;
-            
+
             if (this.selectedStudents.size === 0) {
                 NotificationModule.showError('请先选择要分配的学生');
                 return;
@@ -1112,9 +1127,9 @@
                 <div>将 ${record.students.length} 名学生分配到 ${record.targetClass}</div>
                 <div>操作人：${record.operator}</div>
             `;
-            
+
             historyContainer.insertBefore(historyItem, historyContainer.firstChild);
-            
+
             // 限制历史记录数量
             while (historyContainer.children.length > 10) {
                 historyContainer.removeChild(historyContainer.lastChild);
@@ -1313,7 +1328,7 @@
         generateWeekTimetable() {
             const timeSlots = ['08:00-08:45', '08:55-09:40', '10:00-10:45', '10:55-11:40', '14:00-14:45', '14:55-15:40', '16:00-16:45', '16:55-17:40'];
             const weekDays = ['周一', '周二', '周三', '周四', '周五'];
-            
+
             let html = '<table class="timetable-table">';
             html += '<thead><tr><th class="time-header">时间</th>';
             weekDays.forEach(day => {
@@ -1377,11 +1392,11 @@
         handleDrop(event) {
             event.preventDefault();
             event.currentTarget.classList.remove('drag-over');
-            
+
             const sourceCellId = event.dataTransfer.getData('text/plain');
             const targetCell = event.currentTarget;
             const targetCellId = targetCell.dataset.cell;
-            
+
             if (sourceCellId !== targetCellId) {
                 // 交换课程
                 this.swapCourses(sourceCellId, targetCellId);
@@ -1397,7 +1412,7 @@
         editCourse(cellId) {
             const modal = document.getElementById('courseEditModal');
             modal.style.display = 'block';
-            
+
             // 填充表单数据
             document.getElementById('editCourseName').value = 'Python程序设计';
             document.getElementById('editTeacherName').value = '张老师';
@@ -1419,7 +1434,7 @@
         generateTimetable() {
             const classId = document.getElementById('timetableClassSelect').value;
             const semester = document.getElementById('timetableSemesterSelect').value;
-            
+
             if (!classId) {
                 NotificationModule.showError('请选择班级');
                 return;
@@ -1555,7 +1570,7 @@
             this.loadCourseSelects();
             this.loadTeacherSelects();
             this.loadClassSelects();
-            
+
             // 加载课程计划列表
             this.renderCoursePlanList();
         },
@@ -1566,11 +1581,11 @@
 
             const courses = getAllCourses();
             let html = '<option value="">选择课程</option>';
-            
+
             courses.forEach(course => {
                 html += `<option value="${course.id}">${course.name} (${course.id})</option>`;
             });
-            
+
             courseSelect.innerHTML = html;
         },
 
@@ -1580,12 +1595,12 @@
 
             const teachers = TeachersModule.getAllTeachers();
             let html = '<option value="">选择教师</option>';
-            
+
             teachers.forEach(teacher => {
                 const workload = `${teacher.currentWorkload}/${teacher.maxWorkload}`;
                 html += `<option value="${teacher.id}">${teacher.name} (${teacher.department}) - 工作量: ${workload}</option>`;
             });
-            
+
             teacherSelect.innerHTML = html;
         },
 
@@ -1595,12 +1610,12 @@
 
             const classes = this.getClasses();
             let html = '<option value="">选择班级</option>';
-            
+
             classes.forEach(cls => {
                 const students = StudentsModule.getStudentsByClass(cls.id);
                 html += `<option value="${cls.id}">${cls.name} (${students.length}人)</option>`;
             });
-            
+
             courseClassSelect.innerHTML = html;
         },
 
@@ -1618,7 +1633,7 @@
                 const course = courses.find(c => c.id === plan.courseId);
                 const teacher = teachers.find(t => t.id === plan.teacherId);
                 const cls = classes.find(c => c.id === plan.classId);
-                
+
                 html += `
                     <tr>
                         <td class="checkbox-cell">
@@ -1666,7 +1681,7 @@
                 { id: 'mock02', courseId: 'CS401A', teacherId: 'teacher001', classId: 'CS202302', hours: 48, semester: '2024-2', status: 'scheduled', dayOfWeek: 2, timeSlot: '3-4', roomId: 'B201' },
                 { id: 'mock03', courseId: 'MATH301', teacherId: 'teacher002', classId: 'MATH202301', hours: 64, semester: '2024-2', status: 'scheduled', dayOfWeek: 3, timeSlot: '5-6', roomId: 'A201' },
                 { id: 'mock04', courseId: 'MATH401', teacherId: 'teacher002', classId: 'CS202302', hours: 48, semester: '2024-2', status: 'scheduled', dayOfWeek: 4, timeSlot: '7-8', roomId: 'A202' },
-                { id: 'mock05', courseId: 'CS101',  teacherId: 'teacher003', classId: 'CS202301', hours: 48, semester: '2024-2', status: 'pending' }
+                { id: 'mock05', courseId: 'CS101', teacherId: 'teacher003', classId: 'CS202301', hours: 48, semester: '2024-2', status: 'pending' }
             ];
 
             localStorage.setItem('coursePlans', JSON.stringify(mockPlans));
@@ -1738,14 +1753,14 @@
         editCoursePlan(planId) {
             const plans = this.getCoursePlans();
             const plan = plans.find(p => p.id === planId);
-            
+
             if (plan) {
                 document.getElementById('courseSelect').value = plan.courseId;
                 document.getElementById('teacherSelect').value = plan.teacherId;
                 document.getElementById('courseClassSelect').value = plan.classId;
                 document.getElementById('courseHours').value = plan.hours;
                 document.getElementById('semester').value = plan.semester;
-                
+
                 // 滚动到表单
                 document.querySelector('.management-card').scrollIntoView({ behavior: 'smooth' });
             }
@@ -1758,7 +1773,7 @@
 
             let plans = this.getCoursePlans();
             const plan = plans.find(p => p.id === planId);
-            
+
             if (plan) {
                 // 减少教师工作量
                 const teacher = TeachersModule.getTeacherById(plan.teacherId);
@@ -1791,10 +1806,10 @@
         checkAvailability() {
             const roomType = document.getElementById('roomType').value;
             const minCapacity = parseInt(document.getElementById('minCapacity').value);
-            
+
             const availableRooms = ClassroomsModule.getAvailableClassrooms('1-2', 1, minCapacity);
             const filteredRooms = availableRooms.filter(room => room.type === roomType);
-            
+
             let message = `可用教室（${roomType}，容量≥${minCapacity}）：\n\n`;
             filteredRooms.forEach(room => {
                 message += `${room.id} - ${room.building}${room.number} (容量：${room.capacity})\n`;
@@ -1887,7 +1902,7 @@
 
             const plans = this.getCoursePlans();
             const pendingPlans = plans.filter(p => p.status === 'pending');
-            
+
             if (pendingPlans.length === 0) {
                 alert('没有待安排的课程');
                 return;
@@ -1903,12 +1918,12 @@
                     for (let slot of timeSlots) {
                         const teacher = TeachersModule.getTeacherById(plan.teacherId);
                         const conflict = TeachersModule.checkTimeConflict(plan.teacherId, slot, day);
-                        
+
                         if (!conflict.hasConflict) {
                             // 查找合适的教室
                             const cls = this.getClasses().find(c => c.id === plan.classId);
                             const availableRooms = ClassroomsModule.getAvailableClassrooms(slot, day, cls ? cls.capacity : 30);
-                            
+
                             if (availableRooms.length > 0) {
                                 // 安排课程
                                 plan.status = 'scheduled';
@@ -1948,7 +1963,7 @@
         },
 
         // ==================== 课程表生成功能 ====================
-        
+
         /**
          * 课程表生成初始化
          */
@@ -1964,7 +1979,7 @@
         loadTimetableData() {
             const plans = this.getCoursePlans();
             const scheduledPlans = plans.filter(p => p.status === 'scheduled');
-            
+
             this.renderTimetableList(scheduledPlans);
             this.updateTimetableStatistics();
 
@@ -2017,7 +2032,7 @@
 
             const timeSlots = ['1-2节', '3-4节', '5-6节', '7-8节', '9-10节'];
             const days = ['周一', '周二', '周三', '周四', '周五'];
-            
+
             let html = `
                 <div class="timetable-header">
                     <div class="time-header">时间</div>
@@ -2031,7 +2046,7 @@
                     <div class="timetable-row">
                         <div class="time-cell">${slot}</div>
                 `;
-                
+
                 days.forEach((day, dayIndex) => {
                     html += `
                         <div class="timetable-cell" 
@@ -2042,7 +2057,7 @@
                         </div>
                     `;
                 });
-                
+
                 html += '</div>';
             });
 
@@ -2093,7 +2108,7 @@
 
             // 填充选择框数据
             this.populateTimetableSelects();
-            
+
             // 显示模态框
             modal.style.display = 'block';
         },
@@ -2179,7 +2194,7 @@
             // 更新界面
             this.loadTimetableData();
             this.renderTimetableGrid();
-            
+
             // 关闭模态框
             this.closeTimetableModal();
 
@@ -2191,9 +2206,9 @@
          */
         detectTimetableConflict(teacherId, roomId, dayOfWeek, timeSlot) {
             const plans = this.getCoursePlans();
-            const scheduledPlans = plans.filter(p => 
-                p.status === 'scheduled' && 
-                p.dayOfWeek === parseInt(dayOfWeek) && 
+            const scheduledPlans = plans.filter(p =>
+                p.status === 'scheduled' &&
+                p.dayOfWeek === parseInt(dayOfWeek) &&
                 p.timeSlot === timeSlot
             );
 
@@ -2226,7 +2241,7 @@
         editTimetableItem(itemId) {
             const plans = this.getCoursePlans();
             const item = plans.find(p => p.id === itemId);
-            
+
             if (!item) {
                 alert('课程表项不存在');
                 return;
@@ -2242,7 +2257,7 @@
 
             // 显示模态框
             this.showAddTimetableModal();
-            
+
             // 修改保存按钮行为
             const saveBtn = document.getElementById('saveTimetableBtn');
             if (saveBtn) {
@@ -2276,7 +2291,7 @@
             // 更新课程表项
             const plans = this.getCoursePlans();
             const itemIndex = plans.findIndex(p => p.id === itemId);
-            
+
             if (itemIndex !== -1) {
                 plans[itemIndex] = {
                     ...plans[itemIndex],
@@ -2294,7 +2309,7 @@
                 // 更新界面
                 this.loadTimetableData();
                 this.renderTimetableGrid();
-                
+
                 // 关闭模态框
                 this.closeTimetableModal();
 
@@ -2307,9 +2322,9 @@
          */
         detectTimetableConflictExcluding(teacherId, roomId, dayOfWeek, timeSlot, excludeId) {
             const plans = this.getCoursePlans();
-            const scheduledPlans = plans.filter(p => 
-                p.status === 'scheduled' && 
-                p.dayOfWeek === parseInt(dayOfWeek) && 
+            const scheduledPlans = plans.filter(p =>
+                p.status === 'scheduled' &&
+                p.dayOfWeek === parseInt(dayOfWeek) &&
                 p.timeSlot === timeSlot &&
                 p.id !== excludeId
             );
@@ -2347,7 +2362,7 @@
 
             const plans = this.getCoursePlans();
             const updatedPlans = plans.filter(p => p.id !== itemId);
-            
+
             localStorage.setItem('coursePlans', JSON.stringify(updatedPlans));
 
             // 更新界面
@@ -2363,7 +2378,7 @@
         generateTimetable() {
             const plans = this.getCoursePlans();
             const scheduledPlans = plans.filter(p => p.status === 'scheduled');
-            
+
             if (scheduledPlans.length === 0) {
                 alert('没有已安排的课程，请先进行课程安排');
                 return;
@@ -2383,7 +2398,7 @@
             const course = getCourseById(plan.courseId);
             const teacher = TeachersModule.getTeacherById(plan.teacherId);
             const room = ClassroomsModule.getClassroomById(plan.roomId);
-            
+
             if (!course || !teacher || !room) return;
 
             const cell = document.querySelector(
@@ -2400,11 +2415,11 @@
                     <div class="course-teacher">${teacher.name}</div>
                     <div class="course-room">${room.name}</div>
                 `;
-                
+
                 // 添加拖拽事件
                 courseElement.addEventListener('dragstart', (e) => this.handleDragStart(e));
                 courseElement.addEventListener('dragend', (e) => this.handleDragEnd(e));
-                
+
                 cell.appendChild(courseElement);
             }
         },
@@ -2454,39 +2469,39 @@
         handleDrop(e) {
             e.preventDefault();
             e.currentTarget.classList.remove('drag-over');
-            
+
             const planId = e.dataTransfer.getData('planId');
             const targetCell = e.currentTarget;
             const newDay = parseInt(targetCell.dataset.day);
             const newTimeSlot = this.getTimeSlotFromIndex(parseInt(targetCell.dataset.time));
-            
+
             if (!planId || !newDay || !newTimeSlot) return;
-            
+
             // 更新课程计划
             const plans = this.getCoursePlans();
             const plan = plans.find(p => p.id === planId);
-            
+
             if (plan) {
                 // 检查新时间段的冲突
                 const conflict = this.detectTimetableConflictExcluding(
-                    plan.teacherId, 
-                    plan.roomId, 
-                    newDay.toString(), 
-                    newTimeSlot, 
+                    plan.teacherId,
+                    plan.roomId,
+                    newDay.toString(),
+                    newTimeSlot,
                     planId
                 );
-                
+
                 if (conflict.hasConflict) {
                     alert('时间冲突：' + conflict.message);
                     return;
                 }
-                
+
                 // 更新时间
                 plan.dayOfWeek = newDay;
                 plan.timeSlot = newTimeSlot;
-                
+
                 localStorage.setItem('coursePlans', JSON.stringify(plans));
-                
+
                 // 重新生成课程表
                 this.generateTimetable();
             }
@@ -2512,12 +2527,12 @@
         filterTimetableByClass() {
             const classId = document.getElementById('timetableClassSelect').value;
             const plans = this.getCoursePlans();
-            
+
             let filteredPlans = plans.filter(p => p.status === 'scheduled');
             if (classId) {
                 filteredPlans = filteredPlans.filter(p => p.classId === classId);
             }
-            
+
             this.renderTimetableList(filteredPlans);
         },
 
@@ -2527,12 +2542,12 @@
         filterTimetableByTeacher() {
             const teacherId = document.getElementById('timetableTeacherSelect').value;
             const plans = this.getCoursePlans();
-            
+
             let filteredPlans = plans.filter(p => p.status === 'scheduled');
             if (teacherId) {
                 filteredPlans = filteredPlans.filter(p => p.teacherId === teacherId);
             }
-            
+
             this.renderTimetableList(filteredPlans);
         },
 
@@ -2542,7 +2557,7 @@
         exportTimetable() {
             const plans = this.getCoursePlans();
             const scheduledPlans = plans.filter(p => p.status === 'scheduled');
-            
+
             if (scheduledPlans.length === 0) {
                 alert('没有可导出的课程表数据');
                 return;
@@ -2629,13 +2644,13 @@
             if (modal) {
                 modal.style.display = 'none';
             }
-            
+
             // 重置表单
             const form = document.getElementById('timetableForm');
             if (form) {
                 form.reset();
             }
-            
+
             // 恢复保存按钮行为
             const saveBtn = document.getElementById('saveTimetableBtn');
             if (saveBtn) {
@@ -2681,7 +2696,7 @@
         printTimetable() {
             const plans = this.getCoursePlans();
             const scheduledPlans = plans.filter(p => p.status === 'scheduled');
-            
+
             if (scheduledPlans.length === 0) {
                 alert('没有可打印的课程表数据');
                 return;
@@ -2689,7 +2704,7 @@
 
             // 创建打印窗口
             const printWindow = window.open('', '_blank');
-            
+
             // 生成打印内容
             let printContent = `
                 <!DOCTYPE html>
@@ -2740,27 +2755,27 @@
             // 添加课程表网格
             const timeSlots = ['1-2节', '3-4节', '5-6节', '7-8节', '9-10节'];
             const days = ['周一', '周二', '周三', '周四', '周五'];
-            
+
             printContent += '<div class="timetable-grid">';
             printContent += '<div class="time-cell">时间</div>';
             days.forEach(day => {
                 printContent += `<div class="time-cell">${day}</div>`;
             });
-            
+
             timeSlots.forEach((slot, slotIndex) => {
                 printContent += `<div class="time-cell">${slot}</div>`;
                 days.forEach((day, dayIndex) => {
-                    const plan = scheduledPlans.find(p => 
-                        p.dayOfWeek === dayIndex + 1 && 
+                    const plan = scheduledPlans.find(p =>
+                        p.dayOfWeek === dayIndex + 1 &&
                         this.getTimeSlotIndex(p.timeSlot) === slotIndex + 1
                     );
-                    
+
                     printContent += '<div class="timetable-cell">';
                     if (plan) {
                         const course = getCourseById(plan.courseId);
                         const teacher = TeachersModule.getTeacherById(plan.teacherId);
                         const room = ClassroomsModule.getClassroomById(plan.roomId);
-                        
+
                         printContent += `
                             <div class="course-item">
                                 <strong>${course ? course.name : ''}</strong><br>
@@ -2772,7 +2787,7 @@
                     printContent += '</div>';
                 });
             });
-            
+
             printContent += '</div>';
 
             // 添加课程列表
@@ -2798,7 +2813,7 @@
                 const teacher = TeachersModule.getTeacherById(plan.teacherId);
                 const cls = this.getClasses().find(c => c.id === plan.classId);
                 const room = ClassroomsModule.getClassroomById(plan.roomId);
-                
+
                 printContent += `
                     <tr>
                         <td>${course ? course.name : ''}</td>
@@ -2821,12 +2836,333 @@
             // 写入内容并打印
             printWindow.document.write(printContent);
             printWindow.document.close();
-            
+
             // 等待内容加载完成后打印
-            printWindow.onload = function() {
+            printWindow.onload = function () {
                 printWindow.print();
                 printWindow.close();
             };
+        },
+
+        // ========== 操作日志管理 ==========
+
+        // 操作日志服务
+        OperationLogService: {
+            KEY: 'operationLogs',
+
+            // 添加日志
+            add(log) {
+                const logs = this.getAll();
+                const newLog = {
+                    id: `log_${Date.now()}`,
+                    timestamp: new Date().toISOString(),
+                    ...log
+                };
+                logs.unshift(newLog);
+                // 最多保留1000条日志
+                if (logs.length > 1000) logs.pop();
+                localStorage.setItem(this.KEY, JSON.stringify(logs));
+                return newLog;
+            },
+
+            // 获取所有日志
+            getAll() {
+                const data = localStorage.getItem(this.KEY);
+                return data ? JSON.parse(data) : [];
+            },
+
+            // 搜索和筛选
+            search(filters = {}) {
+                let logs = this.getAll();
+
+                // 按用户类型筛选
+                if (filters.userRole) {
+                    logs = logs.filter(log => log.userRole === filters.userRole);
+                }
+
+                // 按操作类型筛选
+                if (filters.actionType) {
+                    logs = logs.filter(log => log.actionType === filters.actionType);
+                }
+
+                // 按开始日期筛选
+                if (filters.startDate) {
+                    const startDate = new Date(filters.startDate);
+                    logs = logs.filter(log => new Date(log.timestamp) >= startDate);
+                }
+
+                // 按结束日期筛选
+                if (filters.endDate) {
+                    const endDate = new Date(filters.endDate);
+                    endDate.setHours(23, 59, 59, 999);
+                    logs = logs.filter(log => new Date(log.timestamp) <= endDate);
+                }
+
+                // 按关键词搜索
+                if (filters.keyword) {
+                    const keyword = filters.keyword.toLowerCase();
+                    logs = logs.filter(log =>
+                        (log.userName && log.userName.toLowerCase().includes(keyword)) ||
+                        (log.details && log.details.toLowerCase().includes(keyword)) ||
+                        (log.actionName && log.actionName.toLowerCase().includes(keyword))
+                    );
+                }
+
+                return logs;
+            },
+
+            // 清空日志
+            clear() {
+                localStorage.removeItem(this.KEY);
+            }
+        },
+
+        // 初始化操作日志模块
+        initOperationLogs() {
+            this.bindOperationLogEvents();
+            this.loadOperationLogs();
+            this.updateLogStatistics();
+        },
+
+        // 绑定操作日志事件
+        bindOperationLogEvents() {
+            // 查询日志
+            const searchLogsBtn = document.getElementById('searchLogsBtn');
+            if (searchLogsBtn) {
+                searchLogsBtn.addEventListener('click', () => this.filterOperationLogs());
+            }
+
+            // 重置筛选
+            const resetLogFilterBtn = document.getElementById('resetLogFilterBtn');
+            if (resetLogFilterBtn) {
+                resetLogFilterBtn.addEventListener('click', () => this.resetLogFilters());
+            }
+
+            // 导出CSV
+            const exportLogsBtn = document.getElementById('exportLogsBtn');
+            if (exportLogsBtn) {
+                exportLogsBtn.addEventListener('click', () => this.exportLogsToCSV());
+            }
+
+            // 生成测试数据
+            const generateMockLogsBtn = document.getElementById('generateMockLogsBtn');
+            if (generateMockLogsBtn) {
+                generateMockLogsBtn.addEventListener('click', () => this.generateMockLogs());
+            }
+        },
+
+        // 加载操作日志
+        loadOperationLogs() {
+            const logs = this.OperationLogService.getAll();
+            this.renderOperationLogs(logs);
+            this.updateLogStatistics();
+        },
+
+        // 筛选操作日志
+        filterOperationLogs() {
+            const filters = {
+                userRole: document.getElementById('logUserTypeFilter')?.value || '',
+                actionType: document.getElementById('logActionTypeFilter')?.value || '',
+                startDate: document.getElementById('logStartDate')?.value || '',
+                endDate: document.getElementById('logEndDate')?.value || '',
+                keyword: document.getElementById('logSearchInput')?.value || ''
+            };
+
+            const logs = this.OperationLogService.search(filters);
+            this.renderOperationLogs(logs);
+        },
+
+        // 重置筛选条件
+        resetLogFilters() {
+            document.getElementById('logUserTypeFilter').value = '';
+            document.getElementById('logActionTypeFilter').value = '';
+            document.getElementById('logStartDate').value = '';
+            document.getElementById('logEndDate').value = '';
+            document.getElementById('logSearchInput').value = '';
+            this.loadOperationLogs();
+        },
+
+        // 渲染操作日志列表
+        renderOperationLogs(logs) {
+            const tbody = document.getElementById('operationLogTableBody');
+            if (!tbody) return;
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #666;">
+                            暂无操作日志记录
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const roleNames = {
+                'teacher': '教师',
+                'student': '学生',
+                'admin': '管理员',
+                'teaching_admin': '教学管理员'
+            };
+
+            const actionTypeColors = {
+                'login': '#28a745',
+                'logout': '#6c757d',
+                'grade': '#007bff',
+                'course': '#17a2b8',
+                'assignment': '#ffc107',
+                'student': '#e83e8c'
+            };
+
+            tbody.innerHTML = logs.slice(0, 100).map(log => {
+                const time = new Date(log.timestamp).toLocaleString('zh-CN');
+                const roleName = roleNames[log.userRole] || log.userRole || '未知';
+                const color = actionTypeColors[log.actionType] || '#6c757d';
+
+                return `
+                    <tr>
+                        <td>${time}</td>
+                        <td>${log.userName || '未知用户'}</td>
+                        <td><span class="status-badge" style="background: ${color}; color: white;">${roleName}</span></td>
+                        <td>${log.actionName || log.actionType || '未知操作'}</td>
+                        <td>${log.details || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+        },
+
+        // 更新日志统计
+        updateLogStatistics() {
+            const logs = this.OperationLogService.getAll();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const totalLogs = logs.length;
+            const todayLogs = logs.filter(log => new Date(log.timestamp) >= today).length;
+            const teacherLogs = logs.filter(log => log.userRole === 'teacher').length;
+            const studentLogs = logs.filter(log => log.userRole === 'student').length;
+
+            const totalLogsEl = document.getElementById('totalLogs');
+            const todayLogsEl = document.getElementById('todayLogs');
+            const teacherLogsEl = document.getElementById('teacherLogs');
+            const studentLogsEl = document.getElementById('studentLogs');
+
+            if (totalLogsEl) totalLogsEl.textContent = totalLogs;
+            if (todayLogsEl) todayLogsEl.textContent = todayLogs;
+            if (teacherLogsEl) teacherLogsEl.textContent = teacherLogs;
+            if (studentLogsEl) studentLogsEl.textContent = studentLogs;
+        },
+
+        // 导出日志为CSV
+        exportLogsToCSV() {
+            const logs = this.OperationLogService.search({
+                userRole: document.getElementById('logUserTypeFilter')?.value || '',
+                actionType: document.getElementById('logActionTypeFilter')?.value || '',
+                startDate: document.getElementById('logStartDate')?.value || '',
+                endDate: document.getElementById('logEndDate')?.value || '',
+                keyword: document.getElementById('logSearchInput')?.value || ''
+            });
+
+            if (logs.length === 0) {
+                alert('没有可导出的日志记录');
+                return;
+            }
+
+            const roleNames = {
+                'teacher': '教师',
+                'student': '学生',
+                'admin': '管理员',
+                'teaching_admin': '教学管理员'
+            };
+
+            let csvContent = '\uFEFF时间,用户,角色,操作类型,操作详情\n';
+
+            logs.forEach(log => {
+                const time = new Date(log.timestamp).toLocaleString('zh-CN');
+                const userName = log.userName || '未知用户';
+                const roleName = roleNames[log.userRole] || log.userRole || '未知';
+                const actionName = log.actionName || log.actionType || '未知操作';
+                const details = (log.details || '-').replace(/,/g, '，');
+
+                csvContent += `${time},${userName},${roleName},${actionName},${details}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `操作日志_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            alert(`成功导出 ${logs.length} 条日志记录`);
+        },
+
+        // 生成测试日志数据
+        generateMockLogs() {
+            const mockUsers = [
+                { id: 'teacher001', name: '张老师', role: 'teacher' },
+                { id: 'teacher002', name: '李老师', role: 'teacher' },
+                { id: 'teacher003', name: '王老师', role: 'teacher' },
+                { id: 'student001', name: '赵同学', role: 'student' },
+                { id: 'student002', name: '钱同学', role: 'student' },
+                { id: 'student003', name: '孙同学', role: 'student' },
+                { id: 'admin001', name: '管理员', role: 'admin' }
+            ];
+
+            const mockActions = [
+                { type: 'login', name: '登录系统', details: '用户登录成功' },
+                { type: 'logout', name: '退出系统', details: '用户退出登录' },
+                { type: 'grade', name: '录入成绩', details: '录入课程成绩' },
+                { type: 'grade', name: '发布成绩', details: '发布期末考试成绩' },
+                { type: 'course', name: '创建课程', details: '创建新课程' },
+                { type: 'course', name: '选择课程', details: '学生选课操作' },
+                { type: 'assignment', name: '发布作业', details: '发布新作业' },
+                { type: 'assignment', name: '提交作业', details: '学生提交作业' },
+                { type: 'student', name: '修改信息', details: '更新个人信息' }
+            ];
+
+            const logs = [];
+            const now = Date.now();
+
+            for (let i = 0; i < 50; i++) {
+                const user = mockUsers[Math.floor(Math.random() * mockUsers.length)];
+                const action = mockActions[Math.floor(Math.random() * mockActions.length)];
+                const randomTime = now - Math.floor(Math.random() * 7 * 24 * 60 * 60 * 1000);
+
+                logs.push({
+                    id: `log_${randomTime}_${i}`,
+                    timestamp: new Date(randomTime).toISOString(),
+                    userId: user.id,
+                    userName: user.name,
+                    userRole: user.role,
+                    actionType: action.type,
+                    actionName: action.name,
+                    details: action.details
+                });
+            }
+
+            // 按时间排序
+            logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            localStorage.setItem(this.OperationLogService.KEY, JSON.stringify(logs));
+            this.loadOperationLogs();
+
+            alert('已生成50条测试日志数据');
+        },
+
+        // 记录操作日志（供其他模块调用）
+        logOperation(userId, userName, userRole, actionType, actionName, details) {
+            this.OperationLogService.add({
+                userId,
+                userName,
+                userRole,
+                actionType,
+                actionName,
+                details
+            });
         }
     };
 

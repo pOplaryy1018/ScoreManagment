@@ -3,7 +3,7 @@
 // 支持表格展示、筛选、富文本编辑等功能
 // ==============================================
 
-const CourseModule = (function() {
+const CourseModule = (function () {
   'use strict';
 
   // 课件材料数组
@@ -34,6 +34,10 @@ const CourseModule = (function() {
     bindCommonEvents();
     // 初始化富文本编辑器
     initRichTextEditors();
+    // 初始化课件上传
+    initMaterialUpload();
+    // 初始化轮播图管理
+    initCarouselManager();
     // 加载课程数据
     loadTeacherCourses();
   }
@@ -44,33 +48,43 @@ const CourseModule = (function() {
   function initMaterialUpload() {
     const uploadZone = document.getElementById('fileUploadZone');
     const materialUpload = document.getElementById('materialUpload');
-    
-    if (!uploadZone || !materialUpload) return;
-    
-    // 点击上传区域触发文件选择
-    uploadZone.addEventListener('click', function() {
+
+    if (!uploadZone || !materialUpload) {
+      console.log('[CourseModule] 课件上传区域未找到');
+      return;
+    }
+
+    console.log('[CourseModule] 初始化课件上传功能');
+
+    // 点击上传区域触发文件选择（排除按钮点击，按钮已有onclick）
+    uploadZone.addEventListener('click', function (e) {
+      // 如果点击的是按钮或input，不重复触发
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+        return;
+      }
       materialUpload.click();
     });
-    
+
     // 文件选择事件
-    materialUpload.addEventListener('change', function(e) {
+    materialUpload.addEventListener('change', function (e) {
+      console.log('[CourseModule] 文件选择事件触发', e.target.files);
       handleMaterialUpload(e);
     });
-    
+
     // 拖拽上传功能
-    uploadZone.addEventListener('dragover', function(e) {
+    uploadZone.addEventListener('dragover', function (e) {
       e.preventDefault();
       uploadZone.classList.add('dragover');
     });
-    
-    uploadZone.addEventListener('dragleave', function() {
+
+    uploadZone.addEventListener('dragleave', function () {
       uploadZone.classList.remove('dragover');
     });
-    
-    uploadZone.addEventListener('drop', function(e) {
+
+    uploadZone.addEventListener('drop', function (e) {
       e.preventDefault();
       uploadZone.classList.remove('dragover');
-      
+
       if (e.dataTransfer.files.length > 0) {
         const event = {
           target: {
@@ -81,33 +95,35 @@ const CourseModule = (function() {
       }
     });
   }
-  
+
   /**
    * 处理课件上传
    */
   function handleMaterialUpload(event) {
+    console.log('[CourseModule] handleMaterialUpload 被调用', event);
     const files = event.target.files;
+    console.log('[CourseModule] 选择的文件:', files);
     if (!files.length) return;
-    
+
     Array.from(files).forEach(file => {
       // 检查文件类型
       const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png', 'audio/mpeg', 'video/mp4'];
       const fileExtension = file.name.split('.').pop().toLowerCase();
       const allowedExtensions = ['pdf', 'docx', 'jpg', 'jpeg', 'png', 'mp3', 'mp4'];
-      
+
       if (!allowedExtensions.includes(fileExtension)) {
         Utils.showMessage(`文件 ${file.name} 类型不支持，仅支持 PDF/DOCX/JPG/PNG/MP3/MP4 格式`, 'error');
         return;
       }
-      
+
       // 检查文件大小（50MB）
       if (file.size > 50 * 1024 * 1024) {
         Utils.showMessage(`文件 ${file.name} 大小超过50MB限制`, 'error');
         return;
       }
-      
+
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         const material = {
           id: 'material_' + Date.now() + Math.random().toString(36).substr(2, 9),
           name: file.name,
@@ -116,18 +132,18 @@ const CourseModule = (function() {
           url: e.target.result,
           file: file
         };
-        
+
         courseMaterials.push(material);
         renderMaterialList();
         Utils.showMessage(`课件 ${file.name} 上传成功`, 'success');
       };
       reader.readAsDataURL(file);
     });
-    
+
     // 清空文件输入框
     event.target.value = '';
   }
-  
+
   /**
    * 获取文件类型图标
    */
@@ -144,7 +160,7 @@ const CourseModule = (function() {
     };
     return typeMap[ext] || '📎';
   }
-  
+
   /**
    * 格式化文件大小
    */
@@ -155,19 +171,19 @@ const CourseModule = (function() {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
-  
+
   /**
    * 渲染课件列表
    */
   function renderMaterialList() {
     const materialList = document.getElementById('materialList');
     if (!materialList) return;
-    
+
     if (courseMaterials.length === 0) {
       materialList.innerHTML = '<div class="empty-materials">暂无课件</div>';
       return;
     }
-    
+
     materialList.innerHTML = courseMaterials.map(material => `
       <div class="material-item" data-material-id="${material.id}">
         <div class="material-item__icon">${material.type}</div>
@@ -181,7 +197,7 @@ const CourseModule = (function() {
       </div>
     `).join('');
   }
-  
+
   /**
    * 删除课件
    */
@@ -190,40 +206,49 @@ const CourseModule = (function() {
     renderMaterialList();
     Utils.showMessage('课件删除成功', 'success');
   }
-  
+
   /**
    * 初始化轮播图管理
    */
   function initCarouselManager() {
     const uploadZone = document.getElementById('carouselUploadZone');
     const carouselUpload = document.getElementById('carouselUpload');
-    
-    if (!uploadZone || !carouselUpload) return;
-    
-    // 点击上传区域触发文件选择
-    uploadZone.addEventListener('click', function() {
+
+    if (!uploadZone || !carouselUpload) {
+      console.log('[CourseModule] 轮播图上传区域未找到');
+      return;
+    }
+
+    console.log('[CourseModule] 初始化轮播图上传功能');
+
+    // 点击上传区域触发文件选择（排除按钮点击）
+    uploadZone.addEventListener('click', function (e) {
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+        return;
+      }
       carouselUpload.click();
     });
-    
+
     // 文件选择事件
-    carouselUpload.addEventListener('change', function(e) {
+    carouselUpload.addEventListener('change', function (e) {
+      console.log('[CourseModule] 轮播图选择事件触发', e.target.files);
       handleCarouselUpload(e);
     });
-    
+
     // 拖拽上传功能
-    uploadZone.addEventListener('dragover', function(e) {
+    uploadZone.addEventListener('dragover', function (e) {
       e.preventDefault();
       uploadZone.classList.add('dragover');
     });
-    
-    uploadZone.addEventListener('dragleave', function() {
+
+    uploadZone.addEventListener('dragleave', function () {
       uploadZone.classList.remove('dragover');
     });
-    
-    uploadZone.addEventListener('drop', function(e) {
+
+    uploadZone.addEventListener('drop', function (e) {
       e.preventDefault();
       uploadZone.classList.remove('dragover');
-      
+
       if (e.dataTransfer.files.length > 0) {
         const event = {
           target: {
@@ -234,36 +259,36 @@ const CourseModule = (function() {
       }
     });
   }
-  
+
   /**
    * 处理轮播图上传
    */
   function handleCarouselUpload(event) {
     const files = event.target.files;
     if (!files.length) return;
-    
+
     Array.from(files).slice(0, 5).forEach(file => {
       // 检查是否为图片
       if (!file.type.startsWith('image/')) {
         Utils.showMessage(`文件 ${file.name} 不是图片格式`, 'error');
         return;
       }
-      
+
       // 检查文件大小（5MB）
       if (file.size > 5 * 1024 * 1024) {
         Utils.showMessage(`图片 ${file.name} 大小超过5MB限制`, 'error');
         return;
       }
-      
+
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         const carouselItem = {
           id: 'carousel_' + Date.now() + Math.random().toString(36).substr(2, 9),
           name: file.name,
           url: e.target.result,
           file: file
         };
-        
+
         // 添加到轮播图数组
         if (!window.carouselImages) window.carouselImages = [];
         window.carouselImages.push(carouselItem);
@@ -272,23 +297,23 @@ const CourseModule = (function() {
       };
       reader.readAsDataURL(file);
     });
-    
+
     // 清空文件输入框
     event.target.value = '';
   }
-  
+
   /**
    * 渲染轮播图预览
    */
   function renderCarouselPreview() {
     const carouselPreview = document.getElementById('carouselPreview');
     if (!carouselPreview || !window.carouselImages) return;
-    
+
     if (window.carouselImages.length === 0) {
       carouselPreview.innerHTML = '<div class="empty-carousel">暂无轮播图</div>';
       return;
     }
-    
+
     carouselPreview.innerHTML = window.carouselImages.map(item => `
       <div class="carousel-item" data-carousel-id="${item.id}">
         <img src="${item.url}" alt="${item.name}">
@@ -298,7 +323,7 @@ const CourseModule = (function() {
       </div>
     `).join('');
   }
-  
+
   /**
    * 删除轮播图项
    */
@@ -315,21 +340,21 @@ const CourseModule = (function() {
   function initRichTextEditors() {
     // 初始化工具栏按钮事件
     const editorToolbars = document.querySelectorAll('.editor-toolbar');
-    
+
     editorToolbars.forEach(toolbar => {
-      toolbar.addEventListener('click', function(e) {
+      toolbar.addEventListener('click', function (e) {
         const target = e.target.closest('.editor-btn');
         if (!target) return;
-        
+
         e.preventDefault();
-        
+
         const command = target.dataset.command;
         const value = target.dataset.value;
         const editor = toolbar.nextElementSibling;
-        
+
         if (editor && editor.contentEditable === 'true') {
           editor.focus();
-          
+
           try {
             if (command === 'createLink') {
               const url = prompt('请输入链接地址:');
@@ -351,16 +376,16 @@ const CourseModule = (function() {
     // 监听编辑器内容变化，同步到隐藏的textarea
     const editors = document.querySelectorAll('.rich-text-editor');
     editors.forEach(editor => {
-      editor.addEventListener('input', function() {
+      editor.addEventListener('input', function () {
         const textareaId = editor.id + 'Text';
         const textarea = document.getElementById(textareaId);
         if (textarea) {
           textarea.value = editor.innerHTML;
         }
       });
-      
+
       // 粘贴时清理格式
-      editor.addEventListener('paste', function(e) {
+      editor.addEventListener('paste', function (e) {
         e.preventDefault();
         const text = (e.clipboardData || window.clipboardData).getData('text/plain');
         document.execCommand('insertText', false, text);
@@ -418,21 +443,21 @@ const CourseModule = (function() {
     const statusFilter = document.getElementById('statusFilter');
 
     if (searchInput) {
-      searchInput.addEventListener('input', function() {
+      searchInput.addEventListener('input', function () {
         currentFilters.search = this.value.trim();
         filterCourses();
       });
     }
 
     if (semesterFilter) {
-      semesterFilter.addEventListener('change', function() {
+      semesterFilter.addEventListener('change', function () {
         currentFilters.semester = this.value;
         filterCourses();
       });
     }
 
     if (statusFilter) {
-      statusFilter.addEventListener('change', function() {
+      statusFilter.addEventListener('change', function () {
         currentFilters.status = this.value;
         filterCourses();
       });
@@ -447,7 +472,7 @@ const CourseModule = (function() {
     if (!courseForm) return;
 
     // 失去焦点时保存
-    courseForm.addEventListener('blur', function(e) {
+    courseForm.addEventListener('blur', function (e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
         saveCourseDraft();
       }
@@ -463,18 +488,18 @@ const CourseModule = (function() {
   function filterCourses() {
     const { key } = getTeacherIdentifiers();
     const teacherCourses = getTeacherCourses(key);
-    
+
     const filteredCourses = teacherCourses.filter(course => {
       // 搜索筛选
       if (currentFilters.search && !course.name.toLowerCase().includes(currentFilters.search.toLowerCase())) {
         return false;
       }
-      
+
       // 学期筛选
       if (currentFilters.semester && course.semester !== currentFilters.semester) {
         return false;
       }
-      
+
       // 状态筛选
       if (currentFilters.status) {
         const courseStatus = getCourseStatus(course);
@@ -482,10 +507,10 @@ const CourseModule = (function() {
           return false;
         }
       }
-      
+
       return true;
     });
-    
+
     renderCourseTable(filteredCourses);
   }
 
@@ -549,18 +574,18 @@ const CourseModule = (function() {
     document.getElementById('courseCredit').value = course.credit || 3;
     document.getElementById('courseHours').value = course.hours || 48;
     document.getElementById('courseSemester').value = course.semester || '';
-    
+
     // 填充富文本编辑器内容
     const descriptionEditor = document.getElementById('courseDescription');
     const requirementsEditor = document.getElementById('courseRequirements');
-    
+
     if (descriptionEditor) {
       descriptionEditor.innerHTML = course.description || '';
     }
     if (requirementsEditor) {
       requirementsEditor.innerHTML = course.requirements || '';
     }
-    
+
     document.getElementById('enableComments').checked = course.enableComments || false;
     document.getElementById('enableNotes').checked = course.enableNotes || false;
 
@@ -610,10 +635,10 @@ const CourseModule = (function() {
     }
 
     const formData = getFormData();
-    
+
     // 保存课程数据
     saveCourseData(formData);
-    
+
     Utils.showMessage('课程发布成功！', 'success');
     showCourseList();
   }
@@ -624,10 +649,10 @@ const CourseModule = (function() {
   function saveCourseData(courseData) {
     const currentUser = Utils.storage.get('user', {});
     const courses = Utils.storage.get('teacherCourses', []);
-    
+
     // 生成课程ID
     const courseId = 'course_' + Date.now();
-    
+
     const course = {
       id: courseId,
       name: courseData.name,
@@ -645,10 +670,10 @@ const CourseModule = (function() {
       createdAt: new Date().toISOString(),
       version: 1
     };
-    
+
     courses.push(course);
     Utils.storage.set('teacherCourses', courses);
-    
+
     // 清除草稿
     sessionStorage.removeItem(`course_draft_${courseId}`);
   }
@@ -680,7 +705,7 @@ const CourseModule = (function() {
   function getFormData() {
     const descriptionEditor = document.getElementById('courseDescription');
     const requirementsEditor = document.getElementById('courseRequirements');
-    
+
     return {
       name: document.getElementById('courseName').value.trim(),
       credit: document.getElementById('courseCredit').value,
@@ -778,7 +803,7 @@ const CourseModule = (function() {
     document.body.appendChild(modal);
 
     // 点击背景关闭
-    modal.addEventListener('click', function(e) {
+    modal.addEventListener('click', function (e) {
       if (e.target === modal) {
         modal.remove();
       }
@@ -804,30 +829,30 @@ const CourseModule = (function() {
       Utils.showMessage('课程不存在', 'error');
       return;
     }
-    
+
     if (course.status !== 'published') {
       Utils.showMessage('只有已发布的课程才能撤回', 'error');
       return;
     }
-    
+
     if (confirm('确定要撤回该课程吗？撤回后学生将无法查看该课程。')) {
       const courses = Utils.storage.get('teacherCourses', []);
       const courseIndex = courses.findIndex(course => course.id === courseId);
-      
+
       if (courseIndex !== -1) {
         courses[courseIndex].status = 'withdrawn';
         courses[courseIndex].withdrawnAt = new Date().toISOString();
         courses[courseIndex].lastModifiedAt = new Date().toISOString();
-        
+
         // 记录撤回历史
         recordPublishHistory(courseId, course.version || 1, 'withdrawn');
-        
+
         Utils.storage.set('teacherCourses', courses);
         Utils.showMessage('课程已撤回', 'success');
-        
+
         // 发送状态变更通知
         notifyStatusChange(courseId, 'withdrawn');
-        
+
         loadTeacherCourses();
       }
     }
@@ -842,34 +867,34 @@ const CourseModule = (function() {
       Utils.showMessage('课程不存在', 'error');
       return;
     }
-    
+
     // 发布前验证
     if (!validateCourseForPublishing(course)) {
       return;
     }
-    
+
     if (confirm('确定要发布该课程吗？发布后学生将可以查看该课程。')) {
       const courses = Utils.storage.get('teacherCourses', []);
       const courseIndex = courses.findIndex(course => course.id === courseId);
-      
+
       if (courseIndex !== -1) {
         // 创建新版本
         const newVersion = (course.version || 1) + 1;
-        
+
         courses[courseIndex].status = 'published';
         courses[courseIndex].publishedAt = new Date().toISOString();
         courses[courseIndex].version = newVersion;
         courses[courseIndex].lastModifiedAt = new Date().toISOString();
-        
+
         // 记录发布历史
         recordPublishHistory(courseId, newVersion, 'published');
-        
+
         Utils.storage.set('teacherCourses', courses);
         Utils.showMessage('课程已发布', 'success');
-        
+
         // 发送状态变更通知
         notifyStatusChange(courseId, 'published');
-        
+
         loadTeacherCourses();
       }
     }
@@ -1025,11 +1050,11 @@ const CourseModule = (function() {
   function getCourseById(courseId) {
     const storedCourses = Utils.storage.get('teacherCourses', []);
     const course = storedCourses.find(course => course.id === courseId);
-    
+
     if (course) {
       return course;
     }
-    
+
     // 如果没有找到，返回模拟数据
     const allCourses = [
       {
@@ -1071,7 +1096,7 @@ const CourseModule = (function() {
   function loadTeacherCourses() {
     const { key } = getTeacherIdentifiers();
     const teacherCourses = getTeacherCourses(key);
-    
+
     renderCourseTable(teacherCourses);
     updateStatusStats(key);
   }
@@ -1081,14 +1106,14 @@ const CourseModule = (function() {
    */
   function updateStatusStats(teacherId) {
     const stats = getCourseStatusStats(teacherId);
-    
+
     // 更新统计面板显示
     const totalElement = document.getElementById('totalCourses');
     const draftElement = document.getElementById('draftCourses');
     const publishedElement = document.getElementById('publishedCourses');
     const withdrawnElement = document.getElementById('withdrawnCourses');
     const archivedElement = document.getElementById('archivedCourses');
-    
+
     if (totalElement) totalElement.textContent = stats.total;
     if (draftElement) draftElement.textContent = stats.draft;
     if (publishedElement) publishedElement.textContent = stats.published;
@@ -1123,10 +1148,10 @@ const CourseModule = (function() {
     container.innerHTML = courses.map(course => {
       const statusText = getStatusText(course.status);
       const statusClass = getStatusClass(course.status);
-      
+
       // 根据课程状态生成不同的操作按钮
       let actionButtons = '';
-      
+
       switch (course.status) {
         case 'draft':
           actionButtons = `
@@ -1136,7 +1161,7 @@ const CourseModule = (function() {
             <button class="btn btn-sm btn-danger" onclick="CourseModule.deleteCourse('${course.id}')">删除</button>
           `;
           break;
-          
+
         case 'published':
           actionButtons = `
             <button class="btn btn-sm btn-outline" onclick="CourseModule.editCourse('${course.id}')">编辑</button>
@@ -1145,7 +1170,7 @@ const CourseModule = (function() {
             <button class="btn btn-sm btn-danger" onclick="CourseModule.deleteCourse('${course.id}')">删除</button>
           `;
           break;
-          
+
         case 'withdrawn':
           actionButtons = `
             <button class="btn btn-sm btn-outline" onclick="CourseModule.editCourse('${course.id}')">编辑</button>
@@ -1155,14 +1180,14 @@ const CourseModule = (function() {
             <button class="btn btn-sm btn-danger" onclick="CourseModule.deleteCourse('${course.id}')">删除</button>
           `;
           break;
-          
+
         case 'archived':
           actionButtons = `
             <button class="btn btn-sm btn-secondary" onclick="CourseModule.previewCourse('${course.id}')">预览</button>
             <span class="action-disabled">已归档</span>
           `;
           break;
-          
+
         default:
           actionButtons = `
             <button class="btn btn-sm btn-outline" onclick="CourseModule.editCourse('${course.id}')">编辑</button>
@@ -1170,7 +1195,7 @@ const CourseModule = (function() {
             <button class="btn btn-sm btn-danger" onclick="CourseModule.deleteCourse('${course.id}')">删除</button>
           `;
       }
-      
+
       return `
         <tr>
           <td>${course.id}</td>
@@ -1330,7 +1355,7 @@ const CourseModule = (function() {
   function bindMaterialPreviewEvents() {
     const materialNames = document.querySelectorAll('.material-item__name');
     materialNames.forEach(name => {
-      name.addEventListener('click', function() {
+      name.addEventListener('click', function () {
         const materialId = this.getAttribute('data-material-id');
         previewMaterial(materialId);
       });
@@ -1393,7 +1418,7 @@ const CourseModule = (function() {
     document.body.appendChild(modal);
 
     // 点击模态框背景关闭
-    modal.addEventListener('click', function(e) {
+    modal.addEventListener('click', function (e) {
       if (e.target === modal) {
         modal.remove();
       }
@@ -1444,42 +1469,42 @@ const CourseModule = (function() {
    */
   function validateCourseForPublishing(course) {
     const errors = [];
-    
+
     // 检查课程名称
     if (!course.name || course.name.trim().length === 0) {
       errors.push('课程名称不能为空');
     }
-    
+
     // 检查学分
     if (!course.credit || course.credit <= 0) {
       errors.push('学分必须大于0');
     }
-    
+
     // 检查学时
     if (!course.hours || course.hours <= 0) {
       errors.push('学时必须大于0');
     }
-    
+
     // 检查学期
     if (!course.semester || course.semester.trim().length === 0) {
       errors.push('学期不能为空');
     }
-    
+
     // 检查课程描述
     if (!course.description || course.description.trim().length === 0) {
       errors.push('课程描述不能为空');
     }
-    
+
     // 检查选课要求
     if (!course.requirements || course.requirements.trim().length === 0) {
       errors.push('选课要求不能为空');
     }
-    
+
     if (errors.length > 0) {
       Utils.showMessage('发布前验证失败：' + errors.join('，'), 'error');
       return false;
     }
-    
+
     return true;
   }
 
@@ -1489,7 +1514,7 @@ const CourseModule = (function() {
   function recordPublishHistory(courseId, version, action) {
     const currentUser = Utils.storage.get('user', {});
     const history = Utils.storage.get('coursePublishHistory', []);
-    
+
     const historyItem = {
       courseId: courseId,
       version: version,
@@ -1498,7 +1523,7 @@ const CourseModule = (function() {
       operator: currentUser.name || '未知用户',
       operatorId: currentUser.id
     };
-    
+
     history.push(historyItem);
     Utils.storage.set('coursePublishHistory', history);
   }
@@ -1509,9 +1534,9 @@ const CourseModule = (function() {
   function notifyStatusChange(courseId, newStatus) {
     const course = getCourseById(courseId);
     if (!course) return;
-    
+
     const notifications = Utils.storage.get('systemNotifications', []);
-    
+
     let message = '';
     switch (newStatus) {
       case 'published':
@@ -1523,7 +1548,7 @@ const CourseModule = (function() {
       default:
         message = `课程"${course.name}"状态已变更为${newStatus}`;
     }
-    
+
     const notification = {
       id: 'notification_' + Date.now(),
       type: 'course_status_change',
@@ -1534,7 +1559,7 @@ const CourseModule = (function() {
       courseId: courseId,
       courseName: course.name
     };
-    
+
     notifications.push(notification);
     Utils.storage.set('systemNotifications', notifications);
   }
@@ -1544,7 +1569,7 @@ const CourseModule = (function() {
    */
   function getCourseStatusStats(teacherId) {
     const courses = getTeacherCourses(teacherId);
-    
+
     const stats = {
       total: courses.length,
       draft: 0,
@@ -1552,7 +1577,7 @@ const CourseModule = (function() {
       withdrawn: 0,
       archived: 0
     };
-    
+
     courses.forEach(course => {
       switch (course.status) {
         case 'draft':
@@ -1569,7 +1594,7 @@ const CourseModule = (function() {
           break;
       }
     });
-    
+
     return stats;
   }
 
@@ -1582,30 +1607,30 @@ const CourseModule = (function() {
       Utils.showMessage('课程不存在', 'error');
       return;
     }
-    
+
     if (course.status !== 'withdrawn') {
       Utils.showMessage('只有已撤回的课程才能归档', 'error');
       return;
     }
-    
+
     if (confirm('确定要归档该课程吗？归档后课程将进入历史记录，无法再修改。')) {
       const courses = Utils.storage.get('teacherCourses', []);
       const courseIndex = courses.findIndex(course => course.id === courseId);
-      
+
       if (courseIndex !== -1) {
         courses[courseIndex].status = 'archived';
         courses[courseIndex].archivedAt = new Date().toISOString();
         courses[courseIndex].lastModifiedAt = new Date().toISOString();
-        
+
         // 记录归档历史
         recordPublishHistory(courseId, course.version || 1, 'archived');
-        
+
         Utils.storage.set('teacherCourses', courses);
         Utils.showMessage('课程已归档', 'success');
-        
+
         // 发送状态变更通知
         notifyStatusChange(courseId, 'archived');
-        
+
         loadTeacherCourses();
       }
     }
@@ -1620,30 +1645,30 @@ const CourseModule = (function() {
       Utils.showMessage('课程不存在', 'error');
       return;
     }
-    
+
     if (course.status !== 'withdrawn') {
       Utils.showMessage('只有已撤回的课程才能恢复', 'error');
       return;
     }
-    
+
     if (confirm('确定要恢复该课程吗？恢复后课程将重新变为已发布状态。')) {
       const courses = Utils.storage.get('teacherCourses', []);
       const courseIndex = courses.findIndex(course => course.id === courseId);
-      
+
       if (courseIndex !== -1) {
         courses[courseIndex].status = 'published';
         courses[courseIndex].restoredAt = new Date().toISOString();
         courses[courseIndex].lastModifiedAt = new Date().toISOString();
-        
+
         // 记录恢复历史
         recordPublishHistory(courseId, course.version || 1, 'restored');
-        
+
         Utils.storage.set('teacherCourses', courses);
         Utils.showMessage('课程已恢复', 'success');
-        
+
         // 发送状态变更通知
         notifyStatusChange(courseId, 'published');
-        
+
         loadTeacherCourses();
       }
     }
@@ -1659,7 +1684,7 @@ const CourseModule = (function() {
       Utils.showMessage('课程不存在', 'error');
       return;
     }
-    
+
     // 这里可以实现查看课程详情的逻辑
     console.log('查看课程详情:', course);
     Utils.showMessage(`正在查看课程: ${course.name}`, 'info');
